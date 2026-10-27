@@ -78,7 +78,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           }
 
           const traderId = text.replace(/\s+/g, "");
-          if (!/^[A-Za-z0-9-]{4,32}$/.test(traderId)) {
+          if (!B.isValidTraderId(traderId)) {
             await E.say(chatId, B.invalidIdText(), { inline_keyboard: [B.navRow()] });
             return Response.json({ ok: true });
           }
@@ -87,6 +87,8 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           const serviceKey = awaitingBal ? (state.split(":")[1] ?? null) : null;
 
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          // Expire stale pending checks first so a stuck one never blocks a retry.
+          await E.expireStalePending().catch(() => {});
           const { data: pending } = await supabaseAdmin
             .from("verification_requests")
             .select("id")

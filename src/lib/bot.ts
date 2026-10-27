@@ -50,6 +50,14 @@ export function isEligible(balance: number, min: number): boolean {
   return balance >= min;
 }
 
+/** Trader IDs are digits only — anything with letters or symbols is rejected. */
+export function isValidTraderId(id: string): boolean {
+  return /^\d{4,32}$/.test(id.trim());
+}
+
+/** Pending verifications older than this are expired so nothing gets stuck. */
+export const PENDING_TTL_MINUTES = 10;
+
 export function money(n: number): string {
   return `$${n.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
 }
@@ -113,7 +121,7 @@ export function askTraderIdText(platform: Platform, settings: BotSettings): stri
   if (platform === "pocket_option") {
     t += `ℹ️ Pocket Option accounts manual verify kiye jate hain — team verification ke baad aap ko update kare gi.\n\n`;
   }
-  t += `🆔 Trader ID sirf numbers/alphanumeric hoti hai — spaces ya symbols na bhejein.`;
+  t += `🆔 Trader ID sirf <b>digits (numbers)</b> mein bhejein — letters ya words reject ho jate hain.`;
   return t;
 }
 
@@ -122,7 +130,7 @@ export function verifyingText(traderId: string): string {
 }
 
 export function invalidIdText(): string {
-  return "⚠️ Yeh koi sahi Trader ID nahi lagti. Meharbani kar ke sirf apni numeric/alphanumeric Trader ID bhejein (spaces ya symbols ke baghair).";
+  return "⚠️ Yeh koi sahi Trader ID nahi lagti. Trader ID sirf <b>digits</b> hoti hai — words ya letters accept nahi hote. Meharbani kar ke apni numeric Trader ID bhejein (misal: 1234567).";
 }
 
 export function notRegisteredText(traderId: string, platform: Platform, settings: BotSettings): string {

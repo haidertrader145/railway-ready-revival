@@ -16,6 +16,9 @@ export const Route = createFileRoute("/api/public/telegram/pending-requests")({
         }
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        // Expire stale checks first so the bridge never re-checks an old ID forever.
+        const E = await import("@/lib/bot.server");
+        await E.expireStalePending().catch(() => {});
         const { data, error } = await supabaseAdmin
           .from("verification_requests")
           .select("id, chat_id, trader_id, created_at")
