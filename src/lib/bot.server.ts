@@ -51,6 +51,18 @@ export async function say(chatId: number, text: string, keyboard?: B.InlineKeybo
   return res;
 }
 
+/** Expires pending verifications older than PENDING_TTL_MINUTES so a request
+ * that never got an answer can never block the user or loop the checker. */
+export async function expireStalePending(): Promise<void> {
+  const sb = await db();
+  const cutoff = new Date(Date.now() - B.PENDING_TTL_MINUTES * 60_000).toISOString();
+  await sb
+    .from("verification_requests")
+    .update({ status: "expired", resolved_at: new Date().toISOString() })
+    .eq("status", "pending")
+    .lt("created_at", cutoff);
+}
+
 export async function deleteMsg(chatId: number, messageId: number) {
   try {
     await telegramCall("deleteMessage", { chat_id: chatId, message_id: messageId });
