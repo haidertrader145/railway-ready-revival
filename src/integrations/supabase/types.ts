@@ -14,7 +14,123 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bridge_state: {
+        Row: {
+          created_at: string
+          id: number
+          last_seen: string | null
+          login_code: string | null
+          session_string: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: number
+          last_seen?: string | null
+          login_code?: string | null
+          session_string?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          last_seen?: string | null
+          login_code?: string | null
+          session_string?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      license_keys: {
+        Row: {
+          created_at: string
+          id: number
+          issued_at: string | null
+          issued_to_chat_id: number | null
+          issued_to_trader_id: string | null
+          key: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          issued_at?: string | null
+          issued_to_chat_id?: number | null
+          issued_to_trader_id?: string | null
+          key: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          issued_at?: string | null
+          issued_to_chat_id?: number | null
+          issued_to_trader_id?: string | null
+          key?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      verification_requests: {
+        Row: {
+          affiliate_reply: string | null
+          chat_id: number
+          created_at: string
+          id: string
+          resolved_at: string | null
+          status: string
+          trader_id: string
+        }
+        Insert: {
+          affiliate_reply?: string | null
+          chat_id: number
+          created_at?: string
+          id?: string
+          resolved_at?: string | null
+          status?: string
+          trader_id: string
+        }
+        Update: {
+          affiliate_reply?: string | null
+          chat_id?: number
+          created_at?: string
+          id?: string
+          resolved_at?: string | null
+          status?: string
+          trader_id?: string
+        }
+        Relationships: []
+      }
+      verified_users: {
+        Row: {
+          chat_id: number
+          id: number
+          license_key_id: number | null
+          trader_id: string | null
+          username: string | null
+          verified_at: string
+        }
+        Insert: {
+          chat_id: number
+          id?: never
+          license_key_id?: number | null
+          trader_id?: string | null
+          username?: string | null
+          verified_at?: string
+        }
+        Update: {
+          chat_id?: number
+          id?: never
+          license_key_id?: number | null
+          trader_id?: string | null
+          username?: string | null
+          verified_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
