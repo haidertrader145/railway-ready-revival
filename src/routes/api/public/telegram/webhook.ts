@@ -73,7 +73,9 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           const awaitingId = state.startsWith("awaiting_id:");
           const awaitingBal = state.startsWith("awaiting_balance:");
           if (!awaitingId && !awaitingBal) {
-            await E.showMainMenu(chatId);
+            // Free chat: the agent answers only about account creation,
+            // deposit and services. Trader-ID states never reach this.
+            await E.handleChatMessage(chatId, text, request);
             return Response.json({ ok: true });
           }
 
@@ -158,7 +160,7 @@ async function handleButton(chatId: number, data: string, E: typeof import("@/li
       : `${B.insufficientText(service, bal)}\n\n`;
     return E.say(
       chatId,
-      `${intro}🔄 Balance confirm karne ke liye apni <b>Trader ID</b> dobara bhejein.\n\n⚠️ Trading mein risk hota hai — hum kisi profit ki guarantee nahi dete.`,
+      `${intro}🔄 Balance confirm karne ke liye apni <b>Trader ID</b> dobara bhejein.`,
       { inline_keyboard: [B.navRow()] },
     );
   }
