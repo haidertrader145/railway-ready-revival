@@ -108,7 +108,7 @@ export function servicesKeyboard(services: ServiceInfo[]): InlineKeyboard {
 
 export function mainMenuText(settings: BotSettings): string {
   const head = settings.welcome_text || DEFAULT_SETTINGS.welcome_text;
-  return `${head}\n\nNeeche di gayi koi bhi service select karein 👇\n\n💡 Learn Smart • Trade Responsibly • Grow Your Skills`;
+  return `${head}\n\nNeeche di gayi koi bhi service select karein 👇\n\n💬 Koi sawal ho to seedha likh kar bhejein — account banana, deposit ya services ke baare mein main foran jawab doon ga.`;
 }
 
 export function askTraderIdText(platform: Platform, settings: BotSettings): string {
@@ -219,4 +219,36 @@ export function alreadyVerifiedKeyText(traderId: string, key: string): string {
 
 export function pendingRequestText(traderId: string): string {
   return `⏳ Trader ID <b>${traderId}</b> ki verification pehle se jaari hai. Meharbani kar ke result ka intezar karein.`;
+}
+
+// ---------- Chat agent prompt ----------
+
+/** System prompt for the bot's free-chat agent: it answers ONLY about account
+ * creation, deposit requirements and the community's services, and must never
+ * promise profits or discuss anything else. Pure so it stays unit-testable. */
+export function chatAgentSystemPrompt(settings: BotSettings, services: ServiceInfo[]): string {
+  const svc = [...services]
+    .sort((a, b) => a.sort - b.sort)
+    .map((s) => `- ${s.title}: kam se kam ${money(s.min_balance)} balance chahiye`);
+  return [
+    `Aap "Amir FX Community" Telegram bot ke helper agent hain. Roman Urdu mein, chhote aur dostana jawab dein (zyada se zyada 4 chhoti lines). Koi HTML tags use na karein.`,
+    ``,
+    `AAP SIRF IN TEEN TOPICS PAR JAWAB DETE HAIN:`,
+    `1. Account creation — account kaise banayein aur registration link.`,
+    `2. Deposit — har service ke liye kitna minimum balance/deposit chahiye.`,
+    `3. Community ki services aur features — neeche di gayi list.`,
+    ``,
+    `AAP KE PAS YE DATA HAI (sirf yehi use karein, apni taraf se koi link ya number na banayein):`,
+    settings.quotex_reg_link ? `- Quotex registration link: ${settings.quotex_reg_link}` : `- Quotex registration link: admin se confirm karein`,
+    settings.pocket_reg_link ? `- Pocket Option registration link: ${settings.pocket_reg_link}` : `- Pocket Option registration link: admin se confirm karein`,
+    settings.youtube_link ? `- Free learning classes (YouTube): ${settings.youtube_link}` : ``,
+    `Services:`,
+    ...(svc.length ? svc : [`- (abhi services list khali hai)`]),
+    ``,
+    `RULES:`,
+    `- Agar sawal in teen topics se bahar ho (jaise profit guarantee, fixed return, signals ki guarantee, trading tips, personal advice, dosri websites ya bots) to politely kaho ke aap sirf account creation, deposit aur services ke baare mein madad kar sakte hain, aur unhe menu ke buttons use karne ka kaho.`,
+    `- Kabhi bhi profit ki guarantee, fixed return ya sure-shot ka wada na karo.`,
+    `- Trader ID verification sirf bot ke buttons se hoti hai — user ko buttons par guide karein.`,
+    `- Jawab chhota rakhein aur user ko agla step clearly batayein.`,
+  ].join("\n");
 }
