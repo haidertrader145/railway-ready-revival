@@ -14,6 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      bot_messages: {
+        Row: {
+          chat_id: number
+          created_at: string
+          delete_after: string
+          id: number
+          message_id: number
+        }
+        Insert: {
+          chat_id: number
+          created_at?: string
+          delete_after: string
+          id?: never
+          message_id: number
+        }
+        Update: {
+          chat_id?: number
+          created_at?: string
+          delete_after?: string
+          id?: never
+          message_id?: number
+        }
+        Relationships: []
+      }
+      bot_settings: {
+        Row: {
+          key: string
+          value: string | null
+        }
+        Insert: {
+          key: string
+          value?: string | null
+        }
+        Update: {
+          key?: string
+          value?: string | null
+        }
+        Relationships: []
+      }
+      bot_users: {
+        Row: {
+          chat_id: number
+          created_at: string
+          last_balance: number
+          last_deposit: number
+          platform: string | null
+          selected_service: string | null
+          state: string
+          trader_id: string | null
+          trader_verified: boolean
+          updated_at: string
+        }
+        Insert: {
+          chat_id: number
+          created_at?: string
+          last_balance?: number
+          last_deposit?: number
+          platform?: string | null
+          selected_service?: string | null
+          state?: string
+          trader_id?: string | null
+          trader_verified?: boolean
+          updated_at?: string
+        }
+        Update: {
+          chat_id?: number
+          created_at?: string
+          last_balance?: number
+          last_deposit?: number
+          platform?: string | null
+          selected_service?: string | null
+          state?: string
+          trader_id?: string | null
+          trader_verified?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bridge_state: {
         Row: {
           created_at: string
@@ -74,13 +152,40 @@ export type Database = {
         }
         Relationships: []
       }
+      service_config: {
+        Row: {
+          invite_link: string | null
+          min_balance: number
+          service_key: string
+          sort: number
+          title: string
+        }
+        Insert: {
+          invite_link?: string | null
+          min_balance?: number
+          service_key: string
+          sort?: number
+          title: string
+        }
+        Update: {
+          invite_link?: string | null
+          min_balance?: number
+          service_key?: string
+          sort?: number
+          title?: string
+        }
+        Relationships: []
+      }
       verification_requests: {
         Row: {
           affiliate_reply: string | null
           chat_id: number
           created_at: string
           id: string
+          platform: string
+          purpose: string
           resolved_at: string | null
+          service_key: string | null
           status: string
           trader_id: string
         }
@@ -89,7 +194,10 @@ export type Database = {
           chat_id: number
           created_at?: string
           id?: string
+          platform?: string
+          purpose?: string
           resolved_at?: string | null
+          service_key?: string | null
           status?: string
           trader_id: string
         }
@@ -98,7 +206,10 @@ export type Database = {
           chat_id?: number
           created_at?: string
           id?: string
+          platform?: string
+          purpose?: string
           resolved_at?: string | null
+          service_key?: string | null
           status?: string
           trader_id?: string
         }
