@@ -25,3 +25,14 @@ describe("trader ID rules", () => {
     expect(isValidTraderId("123")).toBe(false);
   });
 });
+
+describe("trader ID rules", () => {
+  it("accepts digits-only IDs and rejects words, letters and mixed input", () => {
+    expect(isValidTraderId("1234567")).toBe(true);
+    expect(isValidTraderId("  1234  ")).toBe(true);
+    expect(isValidTraderId("yaar")).toBe(false);
+    expect(isValidTraderId("12ab")).toBe(false);
+    expect(isValidTraderId("123-456")).toBe(false);
+    expect(isValidTraderId("123")).toBe(false);
+  });
+});
