@@ -11,3 +11,6 @@
 - [ ] Owner: add license keys in the admin panel (new database starts empty)
 - [x] Verification helper received (railway-bridge-v6_1.zip), repointed at the current app URL and packaged as amir-fx-verifier-railway.zip
 - [ ] Optional: deploy to Railway and re-register the webhook on the Railway domain
+- [x] Bot: digits-only trader IDs, stale pending checks auto-expire (10 min), Quotex signup link saved
+- [x] Re-linked Telegram after another workspace move; webhook re-registered with the verifier-based secret
+- [ ] Owner: publish so the live bot gets the digits-only and no-stuck fixes
