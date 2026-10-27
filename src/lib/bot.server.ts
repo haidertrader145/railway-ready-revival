@@ -103,6 +103,37 @@ export async function showMainMenu(chatId: number) {
   await say(chatId, B.mainMenuText(s), B.mainMenuKeyboard(!!u?.trader_verified));
 }
 
+/** Sends a plain-text (no HTML) message and schedules it for auto-delete. */
+export async function sayPlain(chatId: number, text: string, keyboard?: B.InlineKeyboard) {
+  const ttlMin = (await loadSettings()).autodelete_minutes;
+  const res = await telegramCall<{ message_id: number }>("sendMessage", {
+    chat_id: chatId,
+    text,
+    disable_web_page_preview: true,
+    ...(keyboard ? { reply_markup: keyboard } : {}),
+  });
+  await track(chatId, res.message_id, ttlMin);
+  return res;
+}
+
+/** Free-text outside the trader-ID / balance states goes to the chat agent,
+ * which answers only about account creation, deposit and services. If the
+ * agent is unavailable or fails, the user falls back to the main menu. */
+export async function handleChatMessage(chatId: number, text: string, request: Request) {
+  try {
+    const { chatAgentReply } = await import("@/lib/chat-agent.server");
+    const reply = await chatAgentReply(request, { text, chatId });
+    if (reply) {
+      await setUser(chatId, { state: "chat" });
+      await sayPlain(chatId, reply, { inline_keyboard: [B.navRow()] });
+      return;
+    }
+  } catch (err) {
+    console.error("chat agent failed:", err);
+  }
+  await showMainMenu(chatId);
+}
+
 export async function showServices(chatId: number) {
   await setUser(chatId, { state: "services" });
   await say(chatId, B.servicesMenuText(), B.servicesKeyboard(await loadServices()));
