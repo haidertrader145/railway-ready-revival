@@ -9,5 +9,5 @@
 - [x] Publish and register the Telegram webhook on the live URL
 - [ ] Owner: send /start to the bot to confirm the real reply
 - [ ] Owner: add license keys in the admin panel (new database starts empty)
-- [ ] Owner: run the verification helper (not in the upload) with the same VERIFIER_SECRET
+- [x] Verification helper received (railway-bridge-v6_1.zip), repointed at the current app URL and packaged as amir-fx-verifier-railway.zip
 - [ ] Optional: deploy to Railway and re-register the webhook on the Railway domain
