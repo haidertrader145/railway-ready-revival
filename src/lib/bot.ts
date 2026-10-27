@@ -52,7 +52,7 @@ export function isEligible(balance: number, min: number): boolean {
 
 /** Trader IDs are digits only — anything with letters or symbols is rejected. */
 export function isValidTraderId(id: string): boolean {
-  return /^\d{4,32}$/.test(id);
+  return /^\d{4,32}$/.test(id.trim());
 }
 
 /** Pending verifications older than this are expired so nothing gets stuck. */
