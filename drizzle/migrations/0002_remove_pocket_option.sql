@@ -1,0 +1,1 @@
+DELETE FROM public.bot_settings WHERE key = 'pocket_reg_link';
