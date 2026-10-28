@@ -10,7 +10,6 @@ const FIELDS: { key: string; label: string; multiline?: boolean }[] = [
   { key: "welcome_media_url", label: "Welcome video link (public .mp4 URL)" },
   { key: "welcome_voice_url", label: "Welcome voice note link (public .ogg URL)" },
   { key: "quotex_reg_link", label: "Quotex registration link" },
-  { key: "pocket_reg_link", label: "Pocket Option registration link" },
   { key: "youtube_link", label: "YouTube Premium Classes playlist link" },
   { key: "onetoone_timings", label: "One-to-One session timings", multiline: true },
   { key: "autodelete_minutes", label: "Auto-delete bot messages after (minutes, 0 = never)" },

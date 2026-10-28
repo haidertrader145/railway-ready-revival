@@ -1,7 +1,8 @@
 // Pure helpers and Roman Urdu message builders for the Amir FX Community bot.
 // No server-only imports here so the rules stay unit-testable.
 
-export type Platform = "quotex" | "pocket_option";
+// Quotex is the only supported platform — Pocket Option was removed.
+export type Platform = "quotex";
 
 export interface ServiceInfo {
   service_key: string;
@@ -15,7 +16,6 @@ export interface BotSettings {
   welcome_text: string;
   welcome_media_url: string;
   quotex_reg_link: string;
-  pocket_reg_link: string;
   youtube_link: string;
   onetoone_timings: string;
   autodelete_minutes: number;
@@ -26,7 +26,6 @@ export const DEFAULT_SETTINGS: BotSettings = {
   welcome_text: "👋 <b>Amir FX Community</b> mein khush aamdeed!",
   welcome_media_url: "",
   quotex_reg_link: "",
-  pocket_reg_link: "",
   youtube_link: "",
   onetoone_timings:
     "One-to-One sessions weekly schedule par hote hain. Timing confirm karne ke liye admin se rabta karein.",
@@ -62,8 +61,8 @@ export function money(n: number): string {
   return `$${n.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
 }
 
-export function platformName(platform: string | null): string {
-  return platform === "pocket_option" ? "Pocket Option" : "Quotex";
+export function platformName(_platform?: string | null): string {
+  return "Quotex";
 }
 
 // ---------- Keyboards ----------
@@ -71,7 +70,6 @@ export function platformName(platform: string | null): string {
 export function mainMenuKeyboard(verified: boolean): InlineKeyboard {
   const rows: InlineButton[][] = [
     [{ text: "📈 Quotex Trading", callback_data: "m:quotex" }],
-    [{ text: "📱 Pocket Option Trading", callback_data: "m:pocket" }],
     [{ text: "🎓 Trading Learning (Free)", callback_data: "m:learn" }],
   ];
   if (verified) rows.push([{ text: "🎯 Meri Services", callback_data: "m:services" }]);
@@ -111,15 +109,12 @@ export function mainMenuText(settings: BotSettings): string {
   return `${head}\n\nNeeche di gayi koi bhi service select karein 👇\n\n💬 Koi sawal ho to seedha likh kar bhejein — account banana, deposit ya services ke baare mein main foran jawab doon ga.`;
 }
 
-export function askTraderIdText(platform: Platform, settings: BotSettings): string {
-  const name = platformName(platform);
-  const link = platform === "quotex" ? settings.quotex_reg_link : settings.pocket_reg_link;
+export function askTraderIdText(_platform: Platform, settings: BotSettings): string {
+  const name = platformName(_platform);
+  const link = settings.quotex_reg_link;
   let t = `📝 Meharbani kar ke apni <b>${name} Trader ID</b> yahan bhejein, taake main aap ka account verify kar sakoon.\n\n`;
   if (link) {
     t += `⚠️ Account hamare registration link se hona chahiye:\n${link}\n\n`;
-  }
-  if (platform === "pocket_option") {
-    t += `ℹ️ Pocket Option accounts manual verify kiye jate hain — team verification ke baad aap ko update kare gi.\n\n`;
   }
   t += `🆔 Trader ID sirf <b>digits (numbers)</b> mein bhejein — letters ya words reject ho jate hain.`;
   return t;
@@ -133,9 +128,9 @@ export function invalidIdText(): string {
   return "⚠️ Yeh koi sahi Trader ID nahi lagti. Trader ID sirf <b>digits</b> hoti hai — words ya letters accept nahi hote. Meharbani kar ke apni numeric Trader ID bhejein (misal: 1234567).";
 }
 
-export function notRegisteredText(traderId: string, platform: Platform, settings: BotSettings): string {
-  const name = platformName(platform);
-  const link = platform === "quotex" ? settings.quotex_reg_link : settings.pocket_reg_link;
+export function notRegisteredText(traderId: string, _platform: Platform, settings: BotSettings): string {
+  const name = platformName(_platform);
+  const link = settings.quotex_reg_link;
   let t = `❌ Aap ki Trader ID <b>${traderId}</b> hamare link se <b>registered nahi</b> hai.\n\n✅ Pehle hamare registration link se account banayein, phir apni Trader ID dobara bhejein.`;
   if (link) t += `\n\n🔗 Registration link:\n${link}`;
   return t;
@@ -240,7 +235,6 @@ export function chatAgentSystemPrompt(settings: BotSettings, services: ServiceIn
     ``,
     `AAP KE PAS YE DATA HAI (sirf yehi use karein, apni taraf se koi link ya number na banayein):`,
     settings.quotex_reg_link ? `- Quotex registration link: ${settings.quotex_reg_link}` : `- Quotex registration link: admin se confirm karein`,
-    settings.pocket_reg_link ? `- Pocket Option registration link: ${settings.pocket_reg_link}` : `- Pocket Option registration link: admin se confirm karein`,
     settings.youtube_link ? `- Free learning classes (YouTube): ${settings.youtube_link}` : ``,
     `Services:`,
     ...(svc.length ? svc : [`- (abhi services list khali hai)`]),

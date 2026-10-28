@@ -135,8 +135,9 @@ async function handleButton(chatId: number, data: string, E: typeof import("@/li
     await E.setUser(chatId, { state: "learning" });
     return E.say(chatId, B.learningText(settings), { inline_keyboard: [B.navRow()] });
   }
-  if (data === "m:quotex" || data === "m:pocket") {
-    const platform: B.Platform = data === "m:quotex" ? "quotex" : "pocket_option";
+  if (data === "m:quotex") {
+    // Quotex is the only platform; stale "m:pocket" taps fall through to the menu.
+    const platform: B.Platform = "quotex";
     // Switching platform resets verification.
     if (user?.platform && user.platform !== platform) {
       await E.setUser(chatId, { trader_verified: false, last_balance: 0, last_deposit: 0 });
