@@ -1,7 +1,8 @@
 // Pure helpers and Roman Urdu message builders for the Amir FX Community bot.
 // No server-only imports here so the rules stay unit-testable.
 
-export type Platform = "quotex" | "pocket_option";
+// Quotex is the only supported platform — Pocket Option was removed.
+export type Platform = "quotex";
 
 export interface ServiceInfo {
   service_key: string;
@@ -15,7 +16,6 @@ export interface BotSettings {
   welcome_text: string;
   welcome_media_url: string;
   quotex_reg_link: string;
-  pocket_reg_link: string;
   youtube_link: string;
   onetoone_timings: string;
   autodelete_minutes: number;
@@ -26,7 +26,6 @@ export const DEFAULT_SETTINGS: BotSettings = {
   welcome_text: "👋 <b>Amir FX Community</b> mein khush aamdeed!",
   welcome_media_url: "",
   quotex_reg_link: "",
-  pocket_reg_link: "",
   youtube_link: "",
   onetoone_timings:
     "One-to-One sessions weekly schedule par hote hain. Timing confirm karne ke liye admin se rabta karein.",
