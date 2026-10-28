@@ -128,7 +128,7 @@ export const addLicenseKeys = createServerFn({ method: "POST" })
     return { added: keys.length };
   });
 
-// Manual verification (used for Pocket Option, or when the helper is offline).
+// Manual verification (used when the helper is offline).
 // The admin must enter the balance they confirmed — it is never guessed.
 export const resolveRequest = createServerFn({ method: "POST" })
   .inputValidator((input: { requestId: string; verified: boolean; balance?: number }) =>
