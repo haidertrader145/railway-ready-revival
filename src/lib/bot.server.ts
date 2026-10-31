@@ -44,7 +44,8 @@ export async function say(chatId: number, text: string, keyboard?: B.InlineKeybo
   const ttlMin = ttl ?? settings.autodelete_minutes;
   const rows: B.InlineButton[][] = [];
   if (keyboard) rows.push(...keyboard.inline_keyboard);
-  rows.push(...B.regButtonRow(settings.quotex_reg_link));
+  const reg = B.regButtonRow(settings.quotex_reg_link);
+  if (reg.length) rows.push(reg);
   const kb: B.InlineKeyboard | undefined = rows.length ? { inline_keyboard: rows } : undefined;
   const res = await telegramCall<{ message_id: number }>("sendMessage", {
     chat_id: chatId,
@@ -128,7 +129,8 @@ export async function sayPlain(chatId: number, text: string, keyboard?: B.Inline
   const settings = await loadSettings();
   const rows: B.InlineButton[][] = [];
   if (keyboard) rows.push(...keyboard.inline_keyboard);
-  rows.push(...B.regButtonRow(settings.quotex_reg_link));
+  const reg = B.regButtonRow(settings.quotex_reg_link);
+  if (reg.length) rows.push(reg);
   const kb: B.InlineKeyboard | undefined = rows.length ? { inline_keyboard: rows } : undefined;
   const res = await telegramCall<{ message_id: number }>("sendMessage", {
     chat_id: chatId,
