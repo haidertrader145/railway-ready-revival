@@ -19,3 +19,4 @@
 - Self-host builds (Dockerfile for Railway) must set `NITRO_PRESET=node-server` and run `node .output/server/index.mjs`; the in-Lovable build stays on the default Cloudflare target.
 - Migrations are applied only through the migration tool; the migrator owns `drizzle/migrations/meta/_journal.json`.
 - Verified Trader ID ownership is stored permanently in service-role-only `trader_id_owners` and enforced by a database trigger; webhook prechecks improve feedback while the trigger prevents concurrent claims and survives admin verification resets.
+- When a chat submits a different Trader ID, clear its previous verification and cached balance before saving the ID; only a successful new verdict may claim ownership and grant services.
