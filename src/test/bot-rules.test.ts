@@ -9,7 +9,6 @@ import {
   oneToOneText,
   shortfall,
   traderIdLengthIssue,
-  welcomeMediaCaption,
 } from "@/lib/bot";
 
 describe("service balance rules", () => {
@@ -72,18 +71,6 @@ describe("registration link on every message", () => {
   });
   it("does nothing when no link is configured", () => {
     expect(appendRegLink("Hello", "", false)).toBe("Hello");
-  });
-});
-
-describe("welcome media caption", () => {
-  const link = "https://broker-qx.pro/sign-up/?lid=1211776";
-  it("carries the registration link on the welcome video/voice for every user", () => {
-    expect(welcomeMediaCaption(link, false)).toContain(link);
-    expect(welcomeMediaCaption(link, true)).toContain(link);
-    expect(welcomeMediaCaption(link, false)).toContain("Registration link");
-  });
-  it("has no caption only when no link is set", () => {
-    expect(welcomeMediaCaption("", false)).toBeUndefined();
   });
 });
 

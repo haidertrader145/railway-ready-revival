@@ -7,8 +7,6 @@ type Config = Awaited<ReturnType<typeof getBotConfig>>;
 
 const FIELDS: { key: string; label: string; multiline?: boolean }[] = [
   { key: "welcome_text", label: "Welcome message", multiline: true },
-  { key: "welcome_media_url", label: "Welcome video link (public .mp4 URL)" },
-  { key: "welcome_voice_url", label: "Welcome voice note link (public .ogg URL)" },
   { key: "quotex_reg_link", label: "Quotex registration link" },
   { key: "youtube_link", label: "YouTube Premium Classes playlist link" },
   { key: "onetoone_timings", label: "One-to-One session timings", multiline: true },

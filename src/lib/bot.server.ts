@@ -158,8 +158,8 @@ export async function showServices(chatId: number) {
 }
 
 /** Deletes every tracked (auto-delete) message in this chat right away, so
- * only the newest exchange stays visible. Untracked messages — the welcome
- * video/voice and license keys — are never touched. */
+ * only the newest exchange stays visible. Untracked messages — license
+ * keys — are never touched. */
 export async function clearChat(chatId: number) {
   const sb = await db();
   const { data } = await sb.from("bot_messages").select("id, message_id").eq("chat_id", chatId).limit(100);
@@ -168,34 +168,7 @@ export async function clearChat(chatId: number) {
   await sb.from("bot_messages").delete().in("id", data.map((m) => m.id));
 }
 
-/** Saves a forwarded video / voice / audio from the owner as the welcome media. */
-export async function saveWelcomeMedia(key: "welcome_media_url" | "welcome_voice_url" | "welcome_audio_url", fileId: string) {
-  const sb = await db();
-  await sb.from("bot_settings").upsert({ key, value: fileId }, { onConflict: "key" });
-}
-
 export async function sendWelcome(chatId: number) {
-  const s = (await loadSettings()) as unknown as Record<string, string>;
-  const u = await getUser(chatId);
-  // Welcome media is never tracked, so the bot never deletes it. Unverified
-  // users get the registration link as the media caption.
-  const caption = B.welcomeMediaCaption(s["quotex_reg_link"] ?? "", !!u?.trader_verified);
-  for (const [method, field, url] of [
-    ["sendVideo", "video", s["welcome_media_url"] ?? ""],
-    ["sendVoice", "voice", s["welcome_voice_url"] ?? ""],
-    ["sendAudio", "audio", s["welcome_audio_url"] ?? ""],
-  ] as const) {
-    if (!url) continue;
-    try {
-      await telegramCall(method, {
-        chat_id: chatId,
-        [field]: url,
-        ...(caption ? { caption } : {}),
-      });
-    } catch (e) {
-      console.error("welcome media failed", e);
-    }
-  }
   await showMainMenu(chatId);
 }
 
