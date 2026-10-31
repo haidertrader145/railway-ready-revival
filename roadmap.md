@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Recommend free learning and community support in chat, without loss-recovery promises or deposit pressure
+
 - [x] Bind successfully verified Trader IDs to one Telegram account, including concurrent checks and admin resets; tests and real webhook rejection verified
 - [x] Explain Telegram group auto-approval and zero-balance removal feasibility; group automation remains unimplemented
 
