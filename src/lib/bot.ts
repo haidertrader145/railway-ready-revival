@@ -24,7 +24,13 @@ export interface BotSettings {
 }
 
 export const DEFAULT_SETTINGS: BotSettings = {
-  welcome_text: "👋 <b>Amir FX Community</b> mein khush aamdeed!",
+  welcome_text:
+    "🌟 <b>WELCOME TO AMIR FX COMMUNITY</b> 🌟\n\n" +
+    "Assalam-o-Alaikum! ❤️\n\n" +
+    "Amir FX Community mein aap ko dil se khush aamdeed!\n\n" +
+    "Hamari community ka maqsad aap ko trading seekhne, apni trading skills improve karne aur trading se related services hasil karne mein guide karna hai.\n\n" +
+    "Yahan aap ko Trading Series, VIP Trading Sessions, AI Trading Bot aur One-to-One Sessions jaisi services mil sakti hain.\n\n" +
+    "👇 Aap kis cheez mein interested hain?",
   welcome_media_url: "",
   quotex_reg_link: "",
   youtube_link: "",
@@ -90,7 +96,7 @@ export function platformName(_platform?: string | null): string {
 export function mainMenuKeyboard(verified: boolean): InlineKeyboard {
   const rows: InlineButton[][] = [
     [{ text: "📈 Quotex Trading", callback_data: "m:quotex" }],
-    [{ text: "🎓 Trading Learning (Free)", callback_data: "m:learn" }],
+    [{ text: "📚 Trading Learning – Free Classes", callback_data: "m:learn" }],
   ];
   if (verified) rows.push([{ text: "🎯 Meri Services", callback_data: "m:services" }]);
   return { inline_keyboard: rows };
@@ -105,10 +111,10 @@ export function navRow(): InlineButton[] {
 
 export function servicesKeyboard(services: ServiceInfo[]): InlineKeyboard {
   const emoji: Record<string, string> = {
-    trading_series: "1️⃣",
-    vip_sessions: "2️⃣",
-    ai_license: "3️⃣",
-    one_to_one: "4️⃣",
+    trading_series: "🚀",
+    vip_sessions: "👑",
+    ai_license: "🤖",
+    one_to_one: "💎",
   };
   const rows = [...services]
     .sort((a, b) => a.sort - b.sort)
@@ -126,17 +132,27 @@ export function servicesKeyboard(services: ServiceInfo[]): InlineKeyboard {
 
 export function mainMenuText(settings: BotSettings): string {
   const head = settings.welcome_text || DEFAULT_SETTINGS.welcome_text;
-  return `${head}\n\nNeeche di gayi koi bhi service select karein 👇\n\n💬 Koi sawal ho to seedha likh kar bhejein — account banana, deposit ya services ke baare mein main foran jawab doon ga.`;
+  return `${head}\n\n💬 Koi sawal ho to seedha likh kar bhejein — account banana, deposit ya services ke baare mein main foran jawab doon ga.`;
 }
 
 export function askTraderIdText(_platform: Platform, settings: BotSettings): string {
-  const name = platformName(_platform);
   const link = settings.quotex_reg_link;
-  let t = `📝 Meharbani kar ke apni <b>${name} Trader ID</b> yahan bhejein, taake main aap ka account verify kar sakoon.\n\n`;
+  let t =
+    `📈 <b>WELCOME TO AMIR FX QUOTEX COMMUNITY</b>\n\n` +
+    `Assalam-o-Alaikum Dear Trader! ❤️\n\n` +
+    `Hamari Quotex Trading Services join karne ke liye sab se pehle aap ka account hamare Official Community Link ke through registered aur verified hona zaroori hai.\n\n` +
+    `<b>Account Verify Karne Ka Tarika:</b>\n` +
+    `1️⃣ Hamare Official Quotex Community Link par click karein.\n` +
+    `2️⃣ Apna Quotex Trading Account create karein.\n` +
+    `3️⃣ Apni Quotex Trader ID hamein send karein.\n` +
+    `4️⃣ Hamara system aap ki Trader ID verify karega.\n` +
+    `5️⃣ Verification successful hone ke baad aap services select kar sakenge.\n\n`;
   if (link) {
-    t += `⚠️ Account hamare registration link se hona chahiye:\n${link}\n\n`;
+    t += `🔗 Official Quotex Community Link:\n${link}\n\n`;
   }
-  t += `🆔 Trader ID sirf <b>digits (numbers)</b> mein bhejein — <b>8 se 9 numbers</b> ki hoti hai. Letters ya words reject ho jate hain.`;
+  t +=
+    `📩 Please Send Your Quotex Trader ID.\n\n` +
+    `🆔 Trader ID sirf <b>digits (numbers)</b> mein <b>8 se 9 numbers</b> ki hoti hai — letters ya words accept nahi hote.`;
   return t;
 }
 
@@ -169,10 +185,15 @@ export function lockedIdText(verifiedId: string, attemptedId: string): string {
 }
 
 export function notRegisteredText(traderId: string, _platform: Platform, settings: BotSettings): string {
-  const name = platformName(_platform);
   const link = settings.quotex_reg_link;
-  let t = `❌ Aap ki Trader ID <b>${traderId}</b> hamare link se <b>registered nahi</b> hai.\n\n✅ Pehle hamare registration link se account banayein, phir apni Trader ID dobara bhejein.`;
-  if (link) t += `\n\n🔗 Registration link:\n${link}`;
+  let t =
+    `❌ <b>TRADER ID VERIFICATION FAILED</b>\n\n` +
+    `Dear Trader!\n\n` +
+    `Aap ki provide ki gayi Quotex Trader ID <b>${traderId}</b> verify nahi ho saki.\n\n` +
+    `Kindly apni correct Trader ID dobara send karein.\n\n` +
+    `Agar aap ne abhi tak hamare Official Community Link se account create nahi kiya, to neeche diye gaye link se register karein.\n\n`;
+  if (link) t += `🔗 Official Quotex Community Link:\n${link}\n\n`;
+  t += `📩 Please Send Your Correct Trader ID.`;
   return t;
 }
 
