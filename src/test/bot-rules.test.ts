@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import { chatAgentSystemPrompt, DEFAULT_SETTINGS, isEligible, isValidTraderId, shortfall, traderIdLengthIssue } from "@/lib/bot";
+import {
+  chatAgentSystemPrompt,
+  DEFAULT_SETTINGS,
+  isEligible,
+  isValidTraderId,
+  oneToOneText,
+  shortfall,
+  traderIdLengthIssue,
+} from "@/lib/bot";
 
 describe("service balance rules", () => {
   it("Trading Series needs $100: $50 is not eligible and is $50 short", () => {
@@ -38,7 +46,7 @@ describe("trader ID rules", () => {
 
 describe("one-to-one session rules", () => {
   it("points the user at the session handle and warns against extra messages", () => {
-    const text = require("@/lib/bot").oneToOneText(DEFAULT_SETTINGS);
+    const text = oneToOneText(DEFAULT_SETTINGS);
     expect(text).toContain("@amirtrader540");
     expect(text).toContain("I need one on one personal session, I have verified my id.");
     expect(text).toContain("koi aur message na bhejein");

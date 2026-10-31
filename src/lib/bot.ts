@@ -62,6 +62,7 @@ export function isValidTraderId(id: string): boolean {
 export function traderIdLengthIssue(id: string): "short" | "long" | null {
   const digits = id.trim().replace(/\D/g, "");
   if (!/^\d+$/.test(id.trim()) || digits.length === 0) return null;
+  if (digits.length >= 8 && digits.length <= 9) return null;
   return digits.length < 8 ? "short" : "long";
 }
 
