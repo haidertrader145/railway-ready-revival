@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Bind successfully verified Trader IDs to one Telegram account, including concurrent checks and admin resets; tests and real webhook rejection verified
+- [x] Explain Telegram group auto-approval and zero-balance removal feasibility; group automation remains unimplemented
+
 - [x] Restore full source from trader-id-keykeeper upload (bot, admin, bridge routes, tests)
 - [x] New Lovable Cloud database: core bot tables + services/settings/bridge row applied
 - [x] Railway deployment files: Dockerfile (Node server preset), railway.json, .env.example, RAILWAY.md, webhook setup script

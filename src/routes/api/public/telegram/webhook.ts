@@ -120,6 +120,11 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
+          if (await E.traderIdOwnedByAnother(traderId, chatId)) {
+            await E.sayTraderIdOwned(chatId);
+            return Response.json({ ok: true });
+          }
+
           const platform = (awaitingId ? state.split(":")[1] : user?.platform) ?? "quotex";
           const serviceKey = awaitingBal ? (state.split(":")[1] ?? null) : null;
 

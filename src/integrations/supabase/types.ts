@@ -176,6 +176,24 @@ export type Database = {
         }
         Relationships: []
       }
+      trader_id_owners: {
+        Row: {
+          chat_id: number
+          claimed_at: string
+          trader_id: string
+        }
+        Insert: {
+          chat_id: number
+          claimed_at?: string
+          trader_id: string
+        }
+        Update: {
+          chat_id?: number
+          claimed_at?: string
+          trader_id?: string
+        }
+        Relationships: []
+      }
       verification_requests: {
         Row: {
           affiliate_reply: string | null

@@ -95,9 +95,22 @@ export async function getUser(chatId: number) {
 
 export async function setUser(chatId: number, patch: Record<string, unknown>) {
   const sb = await db();
-  await sb
+  const { error } = await sb
     .from("bot_users")
     .upsert({ chat_id: chatId, ...patch, updated_at: new Date().toISOString() } as never, { onConflict: "chat_id" });
+  if (error) throw error;
+}
+
+/** Ownership survives admin un-verification; only the original account can reuse the ID. */
+export async function traderIdOwnedByAnother(traderId: string, chatId: number) {
+  const sb = await db();
+  const { data, error } = await sb.from("trader_id_owners").select("chat_id").eq("trader_id", traderId).maybeSingle();
+  if (error) throw error;
+  return data !== null && data.chat_id !== chatId;
+}
+
+export async function sayTraderIdOwned(chatId: number) {
+  await say(chatId, "❌ Yeh Trader ID pehle se kisi doosre Telegram account se verified hai. Apni Trader ID bhejein — ek Trader ID sirf ek Telegram account par use ho sakti hai.", { inline_keyboard: [B.navRow()] });
 }
 
 export async function showMainMenu(chatId: number) {
@@ -207,13 +220,27 @@ export async function applyVerdict(
   }
 
   const balance = outcome.balance;
-  await setUser(req.chat_id, {
-    trader_verified: true,
-    trader_id: req.trader_id,
-    platform,
-    last_balance: balance,
-    last_deposit: outcome.deposit,
-  });
+  const rejectOwnership = async () => {
+    await mark("rejected");
+    await sayTraderIdOwned(req.chat_id);
+    return { ok: true, verified: false, reason: "trader_id_owned" };
+  };
+  if (await traderIdOwnedByAnother(req.trader_id, req.chat_id)) return rejectOwnership();
+  try {
+    // The database trigger atomically claims the ID, including simultaneous verdicts.
+    await setUser(req.chat_id, {
+      trader_verified: true,
+      trader_id: req.trader_id,
+      platform,
+      last_balance: balance,
+      last_deposit: outcome.deposit,
+    });
+  } catch (error) {
+    if (error && typeof error === "object" && "message" in error && String(error.message).includes("trader_id_owned")) {
+      return rejectOwnership();
+    }
+    throw error;
+  }
 
   if (req.purpose !== "balance_check" || !req.service_key) {
     await mark("verified");
