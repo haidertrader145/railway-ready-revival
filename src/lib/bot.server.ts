@@ -117,7 +117,7 @@ export async function sayPlain(chatId: number, text: string, keyboard?: B.Inline
     disable_web_page_preview: true,
     ...(keyboard ? { reply_markup: keyboard } : {}),
   });
-  await track(chatId, res.message_id, ttlMin);
+  await track(chatId, res.message_id, settings.autodelete_minutes);
   return res;
 }
 
