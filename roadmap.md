@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Remove the current-ID lock so users can verify different IDs, while preserving permanent cross-account ownership and fresh balance checks.
+
 - [x] Recommend free learning and community support in chat, without loss-recovery promises or deposit pressure; 19 targeted tests pass
 
 - [x] Bind successfully verified Trader IDs to one Telegram account, including concurrent checks and admin resets; tests and real webhook rejection verified
