@@ -176,7 +176,10 @@ export async function saveWelcomeMedia(key: "welcome_media_url" | "welcome_voice
 
 export async function sendWelcome(chatId: number) {
   const s = (await loadSettings()) as unknown as Record<string, string>;
-  // Welcome media is never tracked, so the bot never deletes it.
+  const u = await getUser(chatId);
+  // Welcome media is never tracked, so the bot never deletes it. Unverified
+  // users get the registration link as the media caption.
+  const caption = B.welcomeMediaCaption(s["quotex_reg_link"] ?? "", !!u?.trader_verified);
   for (const [method, field, url] of [
     ["sendVideo", "video", s["welcome_media_url"] ?? ""],
     ["sendVoice", "voice", s["welcome_voice_url"] ?? ""],
@@ -184,7 +187,11 @@ export async function sendWelcome(chatId: number) {
   ] as const) {
     if (!url) continue;
     try {
-      await telegramCall(method, { chat_id: chatId, [field]: url });
+      await telegramCall(method, {
+        chat_id: chatId,
+        [field]: url,
+        ...(caption ? { caption } : {}),
+      });
     } catch (e) {
       console.error("welcome media failed", e);
     }

@@ -83,6 +83,14 @@ export function appendRegLink(text: string, link: string, verified: boolean): st
   return `${text}\n\n🔗 Registration link:\n${link}`;
 }
 
+/** Caption for the welcome media (video / voice note / audio): the media itself
+ * has no text, so the registration link rides along as the caption for users
+ * who are not verified yet. Verified users get no caption. */
+export function welcomeMediaCaption(link: string, verified: boolean): string | undefined {
+  if (!link || verified) return undefined;
+  return `🔗 Registration link:\n${link}`;
+}
+
 export function money(n: number): string {
   return `$${n.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
 }
