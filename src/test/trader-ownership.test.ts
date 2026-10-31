@@ -5,7 +5,7 @@ const mocks = vi.hoisted(() => ({
   upsertError: null as { message: string } | null,
   request: { id: "request", status: "pending", chat_id: 202, trader_id: "12345678", platform: "quotex", purpose: "id_check", service_key: null },
   writes: [] as { table: string; value: unknown }[],
-  telegram: vi.fn(async () => ({ message_id: 1 })),
+  telegram: vi.fn(async (_method: string, _body: Record<string, unknown>) => ({ message_id: 1 })),
 }));
 
 vi.mock("@/lib/telegram.server", () => ({ telegramCall: mocks.telegram }));
