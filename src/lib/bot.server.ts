@@ -144,17 +144,34 @@ export async function showServices(chatId: number) {
   await say(chatId, B.servicesMenuText(), B.servicesKeyboard(await loadServices()));
 }
 
+/** Deletes every tracked (auto-delete) message in this chat right away, so
+ * only the newest exchange stays visible. Untracked messages — the welcome
+ * video/voice and license keys — are never touched. */
+export async function clearChat(chatId: number) {
+  const sb = await db();
+  const { data } = await sb.from("bot_messages").select("id, message_id").eq("chat_id", chatId).limit(100);
+  if (!data?.length) return;
+  await Promise.all(data.map((m) => deleteMsg(chatId, m.message_id)));
+  await sb.from("bot_messages").delete().in("id", data.map((m) => m.id));
+}
+
+/** Saves a forwarded video / voice / audio from the owner as the welcome media. */
+export async function saveWelcomeMedia(key: "welcome_media_url" | "welcome_voice_url" | "welcome_audio_url", fileId: string) {
+  const sb = await db();
+  await sb.from("bot_settings").upsert({ key, value: fileId }, { onConflict: "key" });
+}
+
 export async function sendWelcome(chatId: number) {
-  const s = await loadSettings();
-  const ttl = s.autodelete_minutes;
+  const s = (await loadSettings()) as unknown as Record<string, string>;
+  // Welcome media is never tracked, so the bot never deletes it.
   for (const [method, field, url] of [
-    ["sendVideo", "video", s.welcome_media_url],
-    ["sendVoice", "voice", (s as unknown as Record<string, string>)["welcome_voice_url"] ?? ""],
+    ["sendVideo", "video", s["welcome_media_url"] ?? ""],
+    ["sendVoice", "voice", s["welcome_voice_url"] ?? ""],
+    ["sendAudio", "audio", s["welcome_audio_url"] ?? ""],
   ] as const) {
     if (!url) continue;
     try {
-      const r = await telegramCall<{ message_id: number }>(method, { chat_id: chatId, [field]: url });
-      await track(chatId, r.message_id, ttl);
+      await telegramCall(method, { chat_id: chatId, [field]: url });
     } catch (e) {
       console.error("welcome media failed", e);
     }
