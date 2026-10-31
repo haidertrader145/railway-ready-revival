@@ -76,7 +76,7 @@ export const PENDING_TTL_MINUTES = 10;
 
 /** Every single bot message carries a clickable "Register Now" button that
  * opens the registration link — for verified and unverified users alike. */
-export const REG_BUTTON_TEXT = "🔗 Register Now";
+export const REG_BUTTON_TEXT = "🆓 CREATE FREE QUOTEX ACCOUNT";
 
 export function regButtonRow(link: string): InlineButton[] {
   if (!link) return [];
