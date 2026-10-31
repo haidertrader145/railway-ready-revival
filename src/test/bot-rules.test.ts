@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  appendRegLink,
   chatAgentSystemPrompt,
   DEFAULT_SETTINGS,
   isEligible,
   isValidTraderId,
   oneToOneText,
+  regButtonRow,
   shortfall,
   traderIdLengthIssue,
 } from "@/lib/bot";
