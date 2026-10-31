@@ -19,3 +19,4 @@
 - [x] One-to-One: booking auto-notifies @amirtrader540, user gets the exact message to send + the "no other messages" warning
 - [x] Admin: "Remove verification" button on the Verified users tab (resets the user, they must verify again)
 - [x] Links: QX series link on Trading Series, YouTube channel on Free Learning; Railway ZIP refreshed
+- [x] Re-linked Telegram again after the latest workspace move; bot @AmirQx_bot verified reachable
