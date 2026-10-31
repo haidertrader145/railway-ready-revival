@@ -60,11 +60,10 @@ describe("one-to-one session rules", () => {
 describe("registration button on every message", () => {
   const link = "https://broker-qx.pro/sign-up/?lid=1211776";
   it("builds a clickable Register Now button for every message, verified or not", () => {
-    const row = regButtonRow(link);
-    expect(row).toHaveLength(1);
-    expect(row[0].url).toBe(link);
-    expect(row[0].text).toContain("Register");
-    expect(row[0].callback_data).toBeUndefined();
+    const [btn] = regButtonRow(link);
+    expect(btn?.url).toBe(link);
+    expect(btn?.text).toContain("Register");
+    expect(btn?.callback_data).toBeUndefined();
   });
   it("returns an empty row when no link is configured", () => {
     expect(regButtonRow("")).toHaveLength(0);

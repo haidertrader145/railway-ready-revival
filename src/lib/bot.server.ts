@@ -42,7 +42,9 @@ export async function track(chatId: number, messageId: number, minutes: number) 
 export async function say(chatId: number, text: string, keyboard?: B.InlineKeyboard, ttl?: number) {
   const settings = await loadSettings();
   const ttlMin = ttl ?? settings.autodelete_minutes;
-  const rows = [...(keyboard?.inline_keyboard ?? []), ...B.regButtonRow(settings.quotex_reg_link)];
+  const rows: B.InlineButton[][] = [];
+  if (keyboard) rows.push(...keyboard.inline_keyboard);
+  rows.push(...B.regButtonRow(settings.quotex_reg_link));
   const kb: B.InlineKeyboard | undefined = rows.length ? { inline_keyboard: rows } : undefined;
   const res = await telegramCall<{ message_id: number }>("sendMessage", {
     chat_id: chatId,
@@ -124,7 +126,9 @@ export async function showMainMenu(chatId: number) {
  * Every message gets the clickable "Register Now" button. */
 export async function sayPlain(chatId: number, text: string, keyboard?: B.InlineKeyboard) {
   const settings = await loadSettings();
-  const rows = [...(keyboard?.inline_keyboard ?? []), ...B.regButtonRow(settings.quotex_reg_link)];
+  const rows: B.InlineButton[][] = [];
+  if (keyboard) rows.push(...keyboard.inline_keyboard);
+  rows.push(...B.regButtonRow(settings.quotex_reg_link));
   const kb: B.InlineKeyboard | undefined = rows.length ? { inline_keyboard: rows } : undefined;
   const res = await telegramCall<{ message_id: number }>("sendMessage", {
     chat_id: chatId,

@@ -116,7 +116,7 @@ export function servicesKeyboard(services: ServiceInfo[]): InlineKeyboard {
     ai_license: "🤖",
     one_to_one: "💎",
   };
-  const rows = [...services]
+  const rows: InlineButton[][] = [...services]
     .sort((a, b) => a.sort - b.sort)
     .map((s) => [
       {
