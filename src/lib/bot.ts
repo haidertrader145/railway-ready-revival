@@ -147,9 +147,6 @@ export function askTraderIdText(_platform: Platform, settings: BotSettings): str
     `3️⃣ Apni Quotex Trader ID hamein send karein.\n` +
     `4️⃣ Hamara system aap ki Trader ID verify karega.\n` +
     `5️⃣ Verification successful hone ke baad aap services select kar sakenge.\n\n`;
-  if (link) {
-    t += `🔗 Official Quotex Community Link:\n${link}\n\n`;
-  }
   t +=
     `📩 Please Send Your Quotex Trader ID.\n\n` +
     `🆔 Trader ID sirf <b>digits (numbers)</b> mein <b>8 se 9 numbers</b> ki hoti hai — letters ya words accept nahi hote.`;
@@ -191,8 +188,7 @@ export function notRegisteredText(traderId: string, _platform: Platform, setting
     `Dear Trader!\n\n` +
     `Aap ki provide ki gayi Quotex Trader ID <b>${traderId}</b> verify nahi ho saki.\n\n` +
     `Kindly apni correct Trader ID dobara send karein.\n\n` +
-    `Agar aap ne abhi tak hamare Official Community Link se account create nahi kiya, to neeche diye gaye link se register karein.\n\n`;
-  if (link) t += `🔗 Official Quotex Community Link:\n${link}\n\n`;
+    `Agar aap ne abhi tak hamare Official Community Link se account create nahi kiya, to neeche diye gaye Register Now button se register karein.\n\n`;
   t += `📩 Please Send Your Correct Trader ID.`;
   return t;
 }
