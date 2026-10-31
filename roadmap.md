@@ -20,5 +20,5 @@
 - [x] Admin: "Remove verification" button on the Verified users tab (resets the user, they must verify again)
 - [x] Links: QX series link on Trading Series, YouTube channel on Free Learning; Railway ZIP refreshed
 - [x] Re-linked Telegram again after the latest workspace move; bot @AmirQx_bot verified reachable
-- [ ] Reconnect Telegram after workspace move (new connection, re-register webhook)
-- [ ] Registration link appended to every bot message for unverified users
+- [x] Re-linked Telegram after the latest workspace move (@AmirQx_bot verified; webhook still registered)
+- [x] Registration link appended to every bot message for unverified users (say + sayPlain, skipped when already in text); Railway ZIP refreshed
