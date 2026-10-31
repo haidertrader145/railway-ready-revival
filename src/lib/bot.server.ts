@@ -38,17 +38,18 @@ export async function track(chatId: number, messageId: number, minutes: number) 
 }
 
 /** Sends a message and schedules it for auto-delete. ttl 0 = keep forever.
- * Unverified users always get the registration link appended. */
+ * Every message gets the clickable "Register Now" button. */
 export async function say(chatId: number, text: string, keyboard?: B.InlineKeyboard, ttl?: number) {
   const settings = await loadSettings();
   const ttlMin = ttl ?? settings.autodelete_minutes;
-  const u = await getUser(chatId);
+  const rows = [...(keyboard?.inline_keyboard ?? []), ...B.regButtonRow(settings.quotex_reg_link)];
+  const kb: B.InlineKeyboard | undefined = rows.length ? { inline_keyboard: rows } : undefined;
   const res = await telegramCall<{ message_id: number }>("sendMessage", {
     chat_id: chatId,
-    text: B.appendRegLink(text, settings.quotex_reg_link, !!u?.trader_verified),
+    text,
     parse_mode: "HTML",
     disable_web_page_preview: true,
-    ...(keyboard ? { reply_markup: keyboard } : {}),
+    ...(kb ? { reply_markup: kb } : {}),
   });
   await track(chatId, res.message_id, ttlMin);
   return res;
