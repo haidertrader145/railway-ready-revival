@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { BotSettingsPanel } from "@/components/BotSettingsPanel";
 import { BridgePanel } from "@/components/BridgePanel";
-import { addLicenseKeys, getAdminOverview, resolveRequest } from "@/lib/admin.functions";
+import { addLicenseKeys, getAdminOverview, resolveRequest, unverifyUser } from "@/lib/admin.functions";
 
 type Overview = Awaited<ReturnType<typeof getAdminOverview>>;
 
@@ -43,6 +43,7 @@ function AdminPage() {
   const fetchOverview = useServerFn(getAdminOverview);
   const postKeys = useServerFn(addLicenseKeys);
   const postResolve = useServerFn(resolveRequest);
+  const postUnverify = useServerFn(unverifyUser);
 
   const [data, setData] = useState<Overview | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -92,6 +93,16 @@ function AdminPage() {
       await load();
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed to resolve");
+    }
+  }
+
+  async function handleUnverify(chatId: number) {
+    if (!window.confirm(`Remove verification for chat ${chatId}? The user will have to verify their trader ID again.`)) return;
+    try {
+      await postUnverify({ data: { chatId } });
+      await load();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to remove verification");
     }
   }
 
@@ -255,13 +266,17 @@ function AdminPage() {
         {tab === "users" && (
           <section className="mt-4 rounded-xl border border-border bg-card p-4">
             <h2 className="text-base font-semibold text-foreground">Verified users</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Removing a verification unlocks the trader ID — the user must verify again (same or new ID) before using services.
+            </p>
             <div className="mt-4 overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border text-left text-muted-foreground">
                     <th className="pb-2 pr-4 font-medium">Trader ID</th>
                     <th className="pb-2 pr-4 font-medium">Chat ID</th>
-                    <th className="pb-2 font-medium">Verified at</th>
+                    <th className="pb-2 pr-4 font-medium">Verified at</th>
+                    <th className="pb-2 font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -269,11 +284,19 @@ function AdminPage() {
                     <tr key={u.id} className="border-b border-border/50">
                       <td className="py-2 pr-4 font-mono text-foreground">{u.trader_id}</td>
                       <td className="py-2 pr-4 font-mono text-muted-foreground">{u.chat_id}</td>
-                      <td className="py-2 text-muted-foreground">{new Date(u.verified_at).toLocaleString()}</td>
+                      <td className="py-2 pr-4 text-muted-foreground">{new Date(u.verified_at).toLocaleString()}</td>
+                      <td className="py-2">
+                        <button
+                          onClick={() => handleUnverify(u.chat_id)}
+                          className="rounded-md bg-destructive px-3 py-1 text-xs font-medium text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Remove verification
+                        </button>
+                      </td>
                     </tr>
                   ))}
                   {data.verifiedUsers.length === 0 && (
-                    <tr><td colSpan={3} className="py-6 text-center text-muted-foreground">No verified users yet.</td></tr>
+                    <tr><td colSpan={4} className="py-6 text-center text-muted-foreground">No verified users yet.</td></tr>
                   )}
                 </tbody>
               </table>
