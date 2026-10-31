@@ -6,9 +6,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import * as B from "@/lib/bot";
-
-/** The owner's Telegram chat: videos / voice notes forwarded from here become the welcome media. */
-const OWNER_CHAT_ID = 8506528935;
 import { deriveTelegramWebhookSecret, safeEqual, telegramCall } from "@/lib/telegram.server";
 
 type TelegramUpdate = {
@@ -17,9 +14,6 @@ type TelegramUpdate = {
     message_id?: number;
     chat?: { id?: number; type?: string };
     text?: string;
-    video?: { file_id: string };
-    voice?: { file_id: string };
-    audio?: { file_id: string };
   };
   callback_query?: {
     id: string;
@@ -66,15 +60,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           const chatId = msg?.chat?.id;
           const text = msg?.text?.trim();
 
-          // Owner forwards the welcome video / voice note to the bot.
-          if (chatId === OWNER_CHAT_ID && (msg?.video || msg?.voice || msg?.audio)) {
-            if (msg.video) await E.saveWelcomeMedia("welcome_media_url", msg.video.file_id);
-            if (msg.voice) await E.saveWelcomeMedia("welcome_voice_url", msg.voice.file_id);
-            if (msg.audio) await E.saveWelcomeMedia("welcome_audio_url", msg.audio.file_id);
-            const what = msg.video ? "Video" : "Voice note";
-            await telegramCall("sendMessage", { chat_id: chatId, text: `✅ ${what} saved — ab har welcome message ke saath jaye ga aur kabhi delete nahi hoga.` });
-            return Response.json({ ok: true });
-          }
           if (!chatId || !text || msg?.chat?.type !== "private") return Response.json({ ok: true });
 
           const settings = await E.loadSettings();

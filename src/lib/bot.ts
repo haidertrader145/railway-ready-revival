@@ -14,7 +14,6 @@ export interface ServiceInfo {
 
 export interface BotSettings {
   welcome_text: string;
-  welcome_media_url: string;
   quotex_reg_link: string;
   youtube_link: string;
   onetoone_timings: string;
@@ -31,7 +30,6 @@ export const DEFAULT_SETTINGS: BotSettings = {
     "Hamari community ka maqsad aap ko trading seekhne, apni trading skills improve karne aur trading se related services hasil karne mein guide karna hai.\n\n" +
     "Yahan aap ko Trading Series, VIP Trading Sessions, AI Trading Bot aur One-to-One Sessions jaisi services mil sakti hain.\n\n" +
     "👇 Aap kis cheez mein interested hain?",
-  welcome_media_url: "",
   quotex_reg_link: "",
   youtube_link: "",
   onetoone_timings:
@@ -80,14 +78,6 @@ export const PENDING_TTL_MINUTES = 10;
 export function appendRegLink(text: string, link: string, _verified: boolean): string {
   if (!link || text.includes(link)) return text;
   return `${text}\n\n🔗 Registration link:\n${link}`;
-}
-
-/** Caption for the welcome media (video / voice note / audio): the media itself
- * has no text, so the registration link rides along as the caption for every
- * user, verified or not. */
-export function welcomeMediaCaption(link: string, _verified: boolean): string | undefined {
-  if (!link) return undefined;
-  return `🔗 Registration link:\n${link}`;
 }
 
 export function money(n: number): string {
