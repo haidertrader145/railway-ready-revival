@@ -60,8 +60,10 @@ describe("one-to-one session rules", () => {
 
 describe("registration link on every message", () => {
   const link = "https://broker-qx.pro/sign-up/?lid=1211776";
-  it("appends the link for unverified users", () => {
+  it("appends the link for every user, verified or not", () => {
     const out = appendRegLink("Hello", link, false);
+    expect(out).toContain(link);
+    expect(appendRegLink("Hello", link, true)).toContain(link);
     expect(out).toContain(link);
     expect(out.startsWith("Hello")).toBe(true);
   });
