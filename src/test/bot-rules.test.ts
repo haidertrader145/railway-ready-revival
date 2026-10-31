@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  appendRegLink,
   chatAgentSystemPrompt,
   DEFAULT_SETTINGS,
   isEligible,
@@ -53,6 +54,22 @@ describe("one-to-one session rules", () => {
   });
   it("onetoone_handle defaults to @amirtrader540", () => {
     expect(DEFAULT_SETTINGS.onetoone_handle).toBe("@amirtrader540");
+  });
+});
+
+describe("registration link on every message", () => {
+  const link = "https://broker-qx.pro/sign-up/?lid=1211776";
+  it("appends the link for unverified users", () => {
+    const out = appendRegLink("Hello", link, false);
+    expect(out).toContain(link);
+    expect(out.startsWith("Hello")).toBe(true);
+  });
+  it("never appends for verified users or when the link is already in the text", () => {
+    expect(appendRegLink("Hello", link, true)).toBe("Hello");
+    expect(appendRegLink(`Sign up: ${link}`, link, false)).toBe(`Sign up: ${link}`);
+  });
+  it("does nothing when no link is configured", () => {
+    expect(appendRegLink("Hello", "", false)).toBe("Hello");
   });
 });
 

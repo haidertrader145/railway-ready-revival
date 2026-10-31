@@ -69,6 +69,14 @@ export function traderIdLengthIssue(id: string): "short" | "long" | null {
 /** Pending verifications older than this are expired so nothing gets stuck. */
 export const PENDING_TTL_MINUTES = 10;
 
+/** Every bot message to a user who is not verified yet carries the
+ * registration link — unless the message already contains it. Verified users
+ * never see it. */
+export function appendRegLink(text: string, link: string, verified: boolean): string {
+  if (!link || verified || text.includes(link)) return text;
+  return `${text}\n\n🔗 Registration link:\n${link}`;
+}
+
 export function money(n: number): string {
   return `$${n.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
 }
