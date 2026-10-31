@@ -75,19 +75,18 @@ export function traderIdLengthIssue(id: string): "short" | "long" | null {
 /** Pending verifications older than this are expired so nothing gets stuck. */
 export const PENDING_TTL_MINUTES = 10;
 
-/** Every bot message to a user who is not verified yet carries the
- * registration link — unless the message already contains it. Verified users
- * never see it. */
-export function appendRegLink(text: string, link: string, verified: boolean): string {
-  if (!link || verified || text.includes(link)) return text;
+/** Every single bot message carries the registration link — for verified and
+ * unverified users alike — unless the message already contains it. */
+export function appendRegLink(text: string, link: string, _verified: boolean): string {
+  if (!link || text.includes(link)) return text;
   return `${text}\n\n🔗 Registration link:\n${link}`;
 }
 
 /** Caption for the welcome media (video / voice note / audio): the media itself
- * has no text, so the registration link rides along as the caption for users
- * who are not verified yet. Verified users get no caption. */
-export function welcomeMediaCaption(link: string, verified: boolean): string | undefined {
-  if (!link || verified) return undefined;
+ * has no text, so the registration link rides along as the caption for every
+ * user, verified or not. */
+export function welcomeMediaCaption(link: string, _verified: boolean): string | undefined {
+  if (!link) return undefined;
   return `🔗 Registration link:\n${link}`;
 }
 
