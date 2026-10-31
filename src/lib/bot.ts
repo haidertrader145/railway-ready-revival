@@ -74,11 +74,13 @@ export function traderIdLengthIssue(id: string): "short" | "long" | null {
 /** Pending verifications older than this are expired so nothing gets stuck. */
 export const PENDING_TTL_MINUTES = 10;
 
-/** Every single bot message carries the registration link — for verified and
- * unverified users alike — unless the message already contains it. */
-export function appendRegLink(text: string, link: string, _verified: boolean): string {
-  if (!link || text.includes(link)) return text;
-  return `${text}\n\n🔗 Registration link:\n${link}`;
+/** Every single bot message carries a clickable "Register Now" button that
+ * opens the registration link — for verified and unverified users alike. */
+export const REG_BUTTON_TEXT = "🔗 Register Now";
+
+export function regButtonRow(link: string): InlineButton[] {
+  if (!link) return [];
+  return [{ text: REG_BUTTON_TEXT, url: link }];
 }
 
 export function money(n: number): string {
