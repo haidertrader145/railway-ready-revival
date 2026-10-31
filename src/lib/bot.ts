@@ -76,7 +76,7 @@ export const PENDING_TTL_MINUTES = 10;
 
 /** Every single bot message carries a clickable "Register Now" button that
  * opens the registration link — for verified and unverified users alike. */
-export const REG_BUTTON_TEXT = "🔗 Register Now";
+export const REG_BUTTON_TEXT = "🆓 CREATE FREE QUOTEX ACCOUNT";
 
 export function regButtonRow(link: string): InlineButton[] {
   if (!link) return [];
@@ -188,7 +188,7 @@ export function notRegisteredText(traderId: string, _platform: Platform, setting
     `Dear Trader!\n\n` +
     `Aap ki provide ki gayi Quotex Trader ID <b>${traderId}</b> verify nahi ho saki.\n\n` +
     `Kindly apni correct Trader ID dobara send karein.\n\n` +
-    `Agar aap ne abhi tak hamare Official Community Link se account create nahi kiya, to neeche diye gaye Register Now button se register karein.\n\n`;
+    `Agar aap ne abhi tak hamare Official Community Link se account create nahi kiya, to neeche diye gaye CREATE FREE QUOTEX ACCOUNT button se register karein.\n\n`;
   t += `📩 Please Send Your Correct Trader ID.`;
   return t;
 }

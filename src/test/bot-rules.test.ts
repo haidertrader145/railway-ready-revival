@@ -62,7 +62,7 @@ describe("registration button on every message", () => {
   it("builds a clickable Register Now button for every message, verified or not", () => {
     const [btn] = regButtonRow(link);
     expect(btn?.url).toBe(link);
-    expect(btn?.text).toContain("Register");
+    expect(btn?.text).toContain("CREATE FREE QUOTEX ACCOUNT");
     expect(btn?.callback_data).toBeUndefined();
   });
   it("returns an empty row when no link is configured", () => {
