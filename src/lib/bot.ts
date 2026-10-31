@@ -339,6 +339,20 @@ export function pendingRequestText(traderId: string): string {
 
 // ---------- Chat agent prompt ----------
 
+/** Loss/distress messages receive free education support, not deposit promotion. */
+export function needsFreeLearningSupport(text: string): boolean {
+  return /\b(loss(?:es)?|lost\s+(?:my\s+)?money|lost\s+(?:everything|all)|recover\s+(?:my\s+)?loss|majboor|majbur|majb[oou]+ri|broke|can't\s+afford|cannot\s+afford|qarz|karz|nuksan|nuqsan|nuksaan|nuqsaan)\b|پیسے.*(?:کھو|ہار)|نقصان|مجبور|قرض/i.test(text);
+}
+
+export function freeLearningSupportReply(settings: BotSettings): string {
+  return [
+    "Aap ke loss ya pareshani ka sun kar afsos hua. Amir FX Community mein aap free learning se shuru kar sakte hain.",
+    "Abhi loss recover karne ke liye mazeed deposit ya trade karne ka pressure na lein; pehle break aur learning par focus karein.",
+    settings.youtube_link ? `Hamari free classes: ${settings.youtube_link}` : "Main Menu mein Trading Learning – Free Classes select karein.",
+    "Free learning ke liye deposit zaroori nahi; learning se loss recovery ki guarantee nahi hoti.",
+  ].join("\n");
+}
+
 /** System prompt for the bot's free-chat agent: it answers ONLY about account
  * creation, deposit requirements and the community's services, and must never
  * promise profits or discuss anything else. Pure so it stays unit-testable. */
@@ -361,6 +375,9 @@ export function chatAgentSystemPrompt(settings: BotSettings, services: ServiceIn
     ...(svc.length ? svc : [`- (abhi services list khali hai)`]),
     ``,
     `RULES:`,
+    `- Relevant jawab mein Amir FX Community ki free learning aur educational support recommend karein. Free classes ke liye deposit ya Trader ID verification ki shart na lagayein. Sirf configured YouTube link share karein; VIP ya Trading Series ko free community ka link samajh kar share na karein.`,
+    `- Agar user loss, paise haarne, majboori, qarz ya financial pareshani bataye to hamdardi se jawab dein aur free learning recommend karein. Deposit, VIP, AI bot ya paid service ko loss recover karne ka tareeqa na batayein; loss chase karne ya udhaar le kar trading karne ko encourage na karein.`,
+    `- Community ko independently verified, certified, real ya legit keh kar apni taraf se tasdeeq na karein. Education aur support ka zikr karein, recovery ka wada nahi.`,
     `- Agar sawal in teen topics se bahar ho (jaise profit guarantee, fixed return, signals ki guarantee, trading tips, personal advice, dosri websites ya bots) to politely kaho ke aap sirf account creation, deposit aur services ke baare mein madad kar sakte hain, aur unhe menu ke buttons use karne ka kaho.`,
     `- Kabhi bhi profit ki guarantee, fixed return ya sure-shot ka wada na karo.`,
     `- Trader ID verification sirf bot ke buttons se hoti hai — user ko buttons par guide karein.`,

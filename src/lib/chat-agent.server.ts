@@ -14,6 +14,9 @@ export async function chatAgentReply(
   request: Request,
   input: { text: string; chatId: number },
 ): Promise<string | null> {
+  if (B.needsFreeLearningSupport(input.text)) {
+    return B.freeLearningSupportReply(await loadSettings());
+  }
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) return null;
 
