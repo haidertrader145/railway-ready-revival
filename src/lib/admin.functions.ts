@@ -193,3 +193,20 @@ export const saveBotConfig = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
+/** Removes a trader's verification (approved IDs only): the verified_users row
+ * is deleted and the bot user resets, so they must send their trader ID again
+ * and pass verification before they can use any service. */
+export const unverifyUser = createServerFn({ method: "POST" })
+  .inputValidator((input: { chatId: number }) => z.object({ chatId: z.number().int().positive() }).parse(input))
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("verified_users").delete().eq("chat_id", data.chatId);
+    const { error } = await supabaseAdmin
+      .from("bot_users")
+      .update({ trader_verified: false, last_balance: 0, last_deposit: 0, state: "menu", updated_at: new Date().toISOString() })
+      .eq("chat_id", data.chatId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });

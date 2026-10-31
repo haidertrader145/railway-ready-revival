@@ -263,7 +263,20 @@ async function deliverService(
   }
 
   if (service.service_key === "one_to_one") {
-    await say(chatId, B.oneToOneText(settings), nav);
+    // Auto-notify the coach's handle with the verified booking details. The
+    // handle may not have started the bot yet, so this is best effort — the
+    // user always gets the exact message to forward.
+    const handle = settings.onetoone_handle || B.DEFAULT_SETTINGS.onetoone_handle;
+    await telegramCall("sendMessage", {
+      chat_id: handle,
+      text:
+        `🆕 <b>New One-on-One session request</b>\n` +
+        `👤 Trader ID: <b>${traderId}</b> (verified ✅)\n` +
+        `💬 Telegram chat: <code>${chatId}</code>\n\n` +
+        `"I need one on one personal session, I have verified my id."`,
+      parse_mode: "HTML",
+    }).catch((e) => console.error("one-to-one notify failed:", e));
+    await say(chatId, B.oneToOneText(settings), nav, 0);
     return;
   }
 

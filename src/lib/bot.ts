@@ -18,6 +18,7 @@ export interface BotSettings {
   quotex_reg_link: string;
   youtube_link: string;
   onetoone_timings: string;
+  onetoone_handle: string;
   autodelete_minutes: number;
   link_delete_minutes: number;
 }
@@ -29,6 +30,7 @@ export const DEFAULT_SETTINGS: BotSettings = {
   youtube_link: "",
   onetoone_timings:
     "One-to-One sessions weekly schedule par hote hain. Timing confirm karne ke liye admin se rabta karein.",
+  onetoone_handle: "@amirtrader540",
   autodelete_minutes: 10,
   link_delete_minutes: 60,
 };
@@ -49,9 +51,19 @@ export function isEligible(balance: number, min: number): boolean {
   return balance >= min;
 }
 
-/** Trader IDs are digits only — anything with letters or symbols is rejected. */
+/** Trader IDs are digits only, 8–9 numbers long. Anything shorter or longer —
+ * or containing letters/symbols — is rejected. */
 export function isValidTraderId(id: string): boolean {
-  return /^\d{4,32}$/.test(id.trim());
+  return /^\d{8,9}$/.test(id.trim());
+}
+
+/** Classifies a digits-only input that failed the length rule, so the bot can
+ * tell "too short" from "too long" instead of one generic error. */
+export function traderIdLengthIssue(id: string): "short" | "long" | null {
+  const digits = id.trim().replace(/\D/g, "");
+  if (!/^\d+$/.test(id.trim()) || digits.length === 0) return null;
+  if (digits.length >= 8 && digits.length <= 9) return null;
+  return digits.length < 8 ? "short" : "long";
 }
 
 /** Pending verifications older than this are expired so nothing gets stuck. */
@@ -116,7 +128,7 @@ export function askTraderIdText(_platform: Platform, settings: BotSettings): str
   if (link) {
     t += `⚠️ Account hamare registration link se hona chahiye:\n${link}\n\n`;
   }
-  t += `🆔 Trader ID sirf <b>digits (numbers)</b> mein bhejein — letters ya words reject ho jate hain.`;
+  t += `🆔 Trader ID sirf <b>digits (numbers)</b> mein bhejein — <b>8 se 9 numbers</b> ki hoti hai. Letters ya words reject ho jate hain.`;
   return t;
 }
 
@@ -125,7 +137,27 @@ export function verifyingText(traderId: string): string {
 }
 
 export function invalidIdText(): string {
-  return "⚠️ Yeh koi sahi Trader ID nahi lagti. Trader ID sirf <b>digits</b> hoti hai — words ya letters accept nahi hote. Meharbani kar ke apni numeric Trader ID bhejein (misal: 1234567).";
+  return "⚠️ Yeh koi sahi Trader ID nahi lagti. Trader ID sirf <b>digits</b> mein <b>8 se 9 numbers</b> ki hoti hai — words ya letters accept nahi hote. Meharbani kar ke apni numeric Trader ID bhejein (misal: 12345678).";
+}
+
+/** Sent when the input is all digits but shorter than 8 numbers. */
+export function shortIdText(): string {
+  return "⚠️ Yeh Trader ID bohat <b>chhoti</b> hai. Sahi Trader ID <b>8 se 9 numbers</b> ki hoti hai — meharbani kar ke apni mukammal numeric Trader ID dobara bhejein (misal: 12345678).";
+}
+
+/** Sent when the input is all digits but longer than 9 numbers. */
+export function longIdText(): string {
+  return "⚠️ Bohat <b>lambi Trader ID</b> — Trader ID sirf <b>8 se 9 numbers</b> ki hoti hai. Meharbani kar ke apni Quotex app se sahi numeric Trader ID check kar ke dobara bhejein.";
+}
+
+/** Once a trader ID is verified it is locked: balance checks must use that
+ * same verified ID, so the deposit lands in the account that was checked. */
+export function lockedIdText(verifiedId: string, attemptedId: string): string {
+  return (
+    `🔒 Aap ki Trader ID <b>${verifiedId}</b> pehle se <b>verified</b> hai — yeh ID aap ke liye <b>lock</b> ho gayi hai.\n\n` +
+    `✅ Access ke liye aap ko isi verified ID <b>${verifiedId}</b> mein deposit karna hoga, phir usi ID ko dobara bhejein.\n\n` +
+    `🆔 Aap ne <b>${attemptedId}</b> bheji hai — dusri ID yahan kaam nahi kare gi. Agar sach mein ID badalni hai to admin se purani verification remove karwani hogi.`
+  );
 }
 
 export function notRegisteredText(traderId: string, _platform: Platform, settings: BotSettings): string {
@@ -192,7 +224,14 @@ export function noKeysText(): string {
 }
 
 export function oneToOneText(settings: BotSettings): string {
-  return `🎉 <b>Mubarak ho!</b> Aap One-to-One Session ke liye eligible hain.\n\n📅 Available Session Timings:\n${settings.onetoone_timings}`;
+  const handle = settings.onetoone_handle || DEFAULT_SETTINGS.onetoone_handle;
+  return (
+    `🎉 <b>Mubarak ho!</b> Aap One-to-One Session ke liye eligible hain.\n\n` +
+    `📅 Available Session Timings:\n${settings.onetoone_timings}\n\n` +
+    `📲 Ab apni booking confirm karne ke liye <b>${handle}</b> ko yeh message bhejein:\n` +
+    `<blockquote>"I need one on one personal session, I have verified my id."</blockquote>\n\n` +
+    `⚠️ <b>Zaroori:</b> booking ke baad sirf ek message bhejein — iske baad koi aur message na bhejein, warna aap ko jawab nahi mile ga.`
+  );
 }
 
 export function learningText(settings: BotSettings): string {
