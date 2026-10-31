@@ -106,12 +106,14 @@ export async function showMainMenu(chatId: number) {
   await say(chatId, B.mainMenuText(s), B.mainMenuKeyboard(!!u?.trader_verified));
 }
 
-/** Sends a plain-text (no HTML) message and schedules it for auto-delete. */
+/** Sends a plain-text (no HTML) message and schedules it for auto-delete.
+ * Unverified users always get the registration link appended. */
 export async function sayPlain(chatId: number, text: string, keyboard?: B.InlineKeyboard) {
-  const ttlMin = (await loadSettings()).autodelete_minutes;
+  const settings = await loadSettings();
+  const u = await getUser(chatId);
   const res = await telegramCall<{ message_id: number }>("sendMessage", {
     chat_id: chatId,
-    text,
+    text: B.appendRegLink(text, settings.quotex_reg_link, !!u?.trader_verified),
     disable_web_page_preview: true,
     ...(keyboard ? { reply_markup: keyboard } : {}),
   });
