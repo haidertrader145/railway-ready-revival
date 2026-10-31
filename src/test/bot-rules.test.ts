@@ -57,20 +57,17 @@ describe("one-to-one session rules", () => {
   });
 });
 
-describe("registration link on every message", () => {
+describe("registration button on every message", () => {
   const link = "https://broker-qx.pro/sign-up/?lid=1211776";
-  it("appends the link for every user, verified or not", () => {
-    const out = appendRegLink("Hello", link, false);
-    expect(out).toContain(link);
-    expect(appendRegLink("Hello", link, true)).toContain(link);
-    expect(out).toContain(link);
-    expect(out.startsWith("Hello")).toBe(true);
+  it("builds a clickable Register Now button for every message, verified or not", () => {
+    const row = regButtonRow(link);
+    expect(row).toHaveLength(1);
+    expect(row[0].url).toBe(link);
+    expect(row[0].text).toContain("Register");
+    expect(row[0].callback_data).toBeUndefined();
   });
-  it("never duplicates the link when it is already in the text", () => {
-    expect(appendRegLink(`Sign up: ${link}`, link, false)).toBe(`Sign up: ${link}`);
-  });
-  it("does nothing when no link is configured", () => {
-    expect(appendRegLink("Hello", "", false)).toBe("Hello");
+  it("returns an empty row when no link is configured", () => {
+    expect(regButtonRow("")).toHaveLength(0);
   });
 });
 
