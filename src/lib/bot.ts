@@ -41,7 +41,8 @@ export const DEFAULT_SETTINGS: BotSettings = {
 
 export interface InlineButton {
   text: string;
-  callback_data: string;
+  callback_data?: string;
+  url?: string;
 }
 export interface InlineKeyboard {
   inline_keyboard: InlineButton[][];
