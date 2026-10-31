@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Remove the current-ID lock so users can verify different IDs, while preserving permanent cross-account ownership and fresh balance checks.
+- [x] Remove the current-ID lock so users can verify different IDs, while preserving permanent cross-account ownership and fresh balance checks; four webhook regression tests pass.
 
 - [x] Recommend free learning and community support in chat, without loss-recovery promises or deposit pressure; 19 targeted tests pass
 
@@ -22,7 +22,7 @@
 - [x] Re-linked Telegram after another workspace move; webhook re-registered with the verifier-based secret
 - [x] Publish requested so the live bot gets the digits-only, no-stuck and chat-agent changes
 - [x] Bot: Pocket Option removed everywhere (menu button, ID question, chat agent, admin field, DB setting); Railway ZIP refreshed
-- [x] Bot: trader IDs must be 8–9 digits (short/long told apart); verified IDs are locked to their chat — a different ID is rejected
+- [x] Bot: trader IDs must be 8–9 digits (short/long told apart); users may verify different IDs, but each verified ID belongs exclusively to its original Telegram account
 - [x] One-to-One: booking auto-notifies @amirtrader540, user gets the exact message to send + the "no other messages" warning
 - [x] Admin: "Remove verification" button on the Verified users tab (resets the user, they must verify again)
 - [x] Links: QX series link on Trading Series, YouTube channel on Free Learning; Railway ZIP refreshed
