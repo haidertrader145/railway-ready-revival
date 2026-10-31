@@ -171,16 +171,6 @@ export function longIdText(): string {
   return "⚠️ Bohat <b>lambi Trader ID</b> — Trader ID sirf <b>8 se 9 numbers</b> ki hoti hai. Meharbani kar ke apni Quotex app se sahi numeric Trader ID check kar ke dobara bhejein.";
 }
 
-/** Once a trader ID is verified it is locked: balance checks must use that
- * same verified ID, so the deposit lands in the account that was checked. */
-export function lockedIdText(verifiedId: string, attemptedId: string): string {
-  return (
-    `🔒 Aap ki Trader ID <b>${verifiedId}</b> pehle se <b>verified</b> hai — yeh ID aap ke liye <b>lock</b> ho gayi hai.\n\n` +
-    `✅ Access ke liye aap ko isi verified ID <b>${verifiedId}</b> mein deposit karna hoga, phir usi ID ko dobara bhejein.\n\n` +
-    `🆔 Aap ne <b>${attemptedId}</b> bheji hai — dusri ID yahan kaam nahi kare gi. Agar sach mein ID badalni hai to admin se purani verification remove karwani hogi.`
-  );
-}
-
 export function notRegisteredText(traderId: string, _platform: Platform, settings: BotSettings): string {
   const link = settings.quotex_reg_link;
   let t =

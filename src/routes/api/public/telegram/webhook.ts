@@ -98,13 +98,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
-          // A verified trader ID is locked: balance checks must use the same
-          // ID the deposit was made in. A different ID is rejected here.
-          if (user?.trader_verified && user.trader_id && traderId !== user.trader_id) {
-            await E.say(chatId, B.lockedIdText(user.trader_id, traderId), { inline_keyboard: [B.navRow()] });
-            return Response.json({ ok: true });
-          }
-
           if (await E.traderIdOwnedByAnother(traderId, chatId)) {
             await E.sayTraderIdOwned(chatId);
             return Response.json({ ok: true });
@@ -134,7 +127,16 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             purpose: awaitingBal ? "balance_check" : "id_check",
             service_key: serviceKey,
           });
-          await E.setUser(chatId, { trader_id: traderId, platform });
+          // A different ID needs its own successful verification and balance.
+          // Clear the old approval before updating the ID so the ownership
+          // trigger only claims it after a confirmed partner-bot verdict.
+          await E.setUser(chatId, {
+            trader_id: traderId,
+            platform,
+            ...(user?.trader_id !== traderId
+              ? { trader_verified: false, last_balance: 0, last_deposit: 0 }
+              : {}),
+          });
           await E.say(chatId, B.verifyingText(traderId));
           return Response.json({ ok: true });
         } catch (err) {
@@ -167,7 +169,6 @@ async function handleButton(chatId: number, data: string, E: typeof import("@/li
     if (user?.platform && user.platform !== platform) {
       await E.setUser(chatId, { trader_verified: false, last_balance: 0, last_deposit: 0 });
     }
-    if (user?.trader_verified && user.platform === platform) return E.showServices(chatId);
     await E.setUser(chatId, { state: `awaiting_id:${platform}`, platform });
     return E.say(chatId, B.askTraderIdText(platform, settings), { inline_keyboard: [B.navRow()] });
   }
