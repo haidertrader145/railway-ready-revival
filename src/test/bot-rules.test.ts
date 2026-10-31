@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { chatAgentSystemPrompt, DEFAULT_SETTINGS, isEligible, isValidTraderId, shortfall } from "@/lib/bot";
+import { chatAgentSystemPrompt, DEFAULT_SETTINGS, isEligible, isValidTraderId, shortfall, traderIdLengthIssue } from "@/lib/bot";
 
 describe("service balance rules", () => {
   it("Trading Series needs $100: $50 is not eligible and is $50 short", () => {
@@ -16,13 +16,35 @@ describe("service balance rules", () => {
 });
 
 describe("trader ID rules", () => {
-  it("accepts digits-only IDs and rejects words, letters and mixed input", () => {
-    expect(isValidTraderId("1234567")).toBe(true);
-    expect(isValidTraderId("  1234  ")).toBe(true);
+  it("accepts digits-only IDs of 8–9 numbers", () => {
+    expect(isValidTraderId("12345678")).toBe(true);
+    expect(isValidTraderId("123456789")).toBe(true);
+    expect(isValidTraderId("  12345678  ")).toBe(true);
+  });
+  it("rejects words, letters, symbols and IDs outside 8–9 digits", () => {
     expect(isValidTraderId("yaar")).toBe(false);
     expect(isValidTraderId("12ab")).toBe(false);
     expect(isValidTraderId("123-456")).toBe(false);
-    expect(isValidTraderId("123")).toBe(false);
+    expect(isValidTraderId("1234567")).toBe(false); // 7 digits: too short
+    expect(isValidTraderId("1234567890")).toBe(false); // 10 digits: too long
+  });
+  it("classifies digits-only failures as short or long for the exact message", () => {
+    expect(traderIdLengthIssue("1234567")).toBe("short");
+    expect(traderIdLengthIssue("1234567890")).toBe("long");
+    expect(traderIdLengthIssue("12345678")).toBeNull();
+    expect(traderIdLengthIssue("yaar")).toBeNull();
+  });
+});
+
+describe("one-to-one session rules", () => {
+  it("points the user at the session handle and warns against extra messages", () => {
+    const text = require("@/lib/bot").oneToOneText(DEFAULT_SETTINGS);
+    expect(text).toContain("@amirtrader540");
+    expect(text).toContain("I need one on one personal session, I have verified my id.");
+    expect(text).toContain("koi aur message na bhejein");
+  });
+  it("onetoone_handle defaults to @amirtrader540", () => {
+    expect(DEFAULT_SETTINGS.onetoone_handle).toBe("@amirtrader540");
   });
 });
 
@@ -37,16 +59,5 @@ describe("chat agent rules", () => {
     expect(prompt).toContain("Deposit");
     expect(prompt).toContain("VIP Sessions: kam se kam $50");
     expect(prompt).toContain("Kabhi bhi profit ki guarantee");
-  });
-});
-
-describe("trader ID rules", () => {
-  it("accepts digits-only IDs and rejects words, letters and mixed input", () => {
-    expect(isValidTraderId("1234567")).toBe(true);
-    expect(isValidTraderId("  1234  ")).toBe(true);
-    expect(isValidTraderId("yaar")).toBe(false);
-    expect(isValidTraderId("12ab")).toBe(false);
-    expect(isValidTraderId("123-456")).toBe(false);
-    expect(isValidTraderId("123")).toBe(false);
   });
 });

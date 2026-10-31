@@ -81,7 +81,19 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
           const traderId = text.replace(/\s+/g, "");
           if (!B.isValidTraderId(traderId)) {
-            await E.say(chatId, B.invalidIdText(), { inline_keyboard: [B.navRow()] });
+            // Digits-only but wrong length gets a specific message; otherwise
+            // the generic letters/symbols rejection.
+            const issue = B.traderIdLengthIssue(traderId);
+            await E.say(chatId, issue === "short" ? B.shortIdText() : issue === "long" ? B.longIdText() : B.invalidIdText(), {
+              inline_keyboard: [B.navRow()],
+            });
+            return Response.json({ ok: true });
+          }
+
+          // A verified trader ID is locked: balance checks must use the same
+          // ID the deposit was made in. A different ID is rejected here.
+          if (user?.trader_verified && user.trader_id && traderId !== user.trader_id) {
+            await E.say(chatId, B.lockedIdText(user.trader_id, traderId), { inline_keyboard: [B.navRow()] });
             return Response.json({ ok: true });
           }
 
