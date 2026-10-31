@@ -37,12 +37,15 @@ export async function track(chatId: number, messageId: number, minutes: number) 
   });
 }
 
-/** Sends a message and schedules it for auto-delete. ttl 0 = keep forever. */
+/** Sends a message and schedules it for auto-delete. ttl 0 = keep forever.
+ * Unverified users always get the registration link appended. */
 export async function say(chatId: number, text: string, keyboard?: B.InlineKeyboard, ttl?: number) {
-  const ttlMin = ttl ?? (await loadSettings()).autodelete_minutes;
+  const settings = await loadSettings();
+  const ttlMin = ttl ?? settings.autodelete_minutes;
+  const u = await getUser(chatId);
   const res = await telegramCall<{ message_id: number }>("sendMessage", {
     chat_id: chatId,
-    text,
+    text: B.appendRegLink(text, settings.quotex_reg_link, !!u?.trader_verified),
     parse_mode: "HTML",
     disable_web_page_preview: true,
     ...(keyboard ? { reply_markup: keyboard } : {}),
