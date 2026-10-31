@@ -60,13 +60,14 @@ describe("one-to-one session rules", () => {
 
 describe("registration link on every message", () => {
   const link = "https://broker-qx.pro/sign-up/?lid=1211776";
-  it("appends the link for unverified users", () => {
+  it("appends the link for every user, verified or not", () => {
     const out = appendRegLink("Hello", link, false);
+    expect(out).toContain(link);
+    expect(appendRegLink("Hello", link, true)).toContain(link);
     expect(out).toContain(link);
     expect(out.startsWith("Hello")).toBe(true);
   });
-  it("never appends for verified users or when the link is already in the text", () => {
-    expect(appendRegLink("Hello", link, true)).toBe("Hello");
+  it("never duplicates the link when it is already in the text", () => {
     expect(appendRegLink(`Sign up: ${link}`, link, false)).toBe(`Sign up: ${link}`);
   });
   it("does nothing when no link is configured", () => {
@@ -76,12 +77,12 @@ describe("registration link on every message", () => {
 
 describe("welcome media caption", () => {
   const link = "https://broker-qx.pro/sign-up/?lid=1211776";
-  it("carries the registration link on the welcome video/voice for unverified users", () => {
+  it("carries the registration link on the welcome video/voice for every user", () => {
     expect(welcomeMediaCaption(link, false)).toContain(link);
+    expect(welcomeMediaCaption(link, true)).toContain(link);
     expect(welcomeMediaCaption(link, false)).toContain("Registration link");
   });
-  it("has no caption for verified users or when no link is set", () => {
-    expect(welcomeMediaCaption(link, true)).toBeUndefined();
+  it("has no caption only when no link is set", () => {
     expect(welcomeMediaCaption("", false)).toBeUndefined();
   });
 });
