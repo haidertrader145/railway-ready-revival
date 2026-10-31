@@ -169,11 +169,11 @@ async function handleButton(chatId: number, data: string, E: typeof import("@/li
     await E.setUser(chatId, { state: `awaiting_balance:${key}`, selected_service: key });
     const bal = Number(user.last_balance ?? 0);
     const intro = B.isEligible(bal, service.min_balance)
-      ? `🎯 <b>${service.title}</b>\n📌 Required balance: <b>${B.money(service.min_balance)}</b>\n\n`
-      : `${B.insufficientText(service, bal)}\n\n`;
+      ? `${B.serviceIntroText(service)}\n\n`
+      : `${B.serviceIntroText(service)}\n\n${B.insufficientText(service, bal)}\n\n`;
     return E.say(
       chatId,
-      `${intro}🔄 Balance confirm karne ke liye apni <b>Trader ID</b> dobara bhejein.`,
+      `${intro}📩 Please Send Your Trader ID.`,
       { inline_keyboard: [B.navRow()] },
     );
   }

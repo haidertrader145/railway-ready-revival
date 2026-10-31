@@ -22,3 +22,4 @@
 - [x] Re-linked Telegram again after the latest workspace move; bot @AmirQx_bot verified reachable
 - [x] Re-linked Telegram after the latest workspace move (@AmirQx_bot verified; webhook still registered)
 - [x] Registration link appended to every bot message for unverified users (say + sayPlain, skipped when already in text); Railway ZIP refreshed
+- [x] Owner's full message script (welcome, verification, failed/success, per-service, free learning) added to the bot; Telegram re-linked after workspace move

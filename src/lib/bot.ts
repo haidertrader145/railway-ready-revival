@@ -202,30 +202,87 @@ export function unknownReplyText(traderId: string): string {
 }
 
 export function verifiedText(traderId: string, balance: number): string {
-  return `✅ <b>Verification Successful!</b>\n\n🆔 Trader ID: <b>${traderId}</b>\n💰 Available Balance: <b>${money(balance)}</b>\n\nAb neeche se apni service select karein 👇`;
+  return (
+    `🎉 <b>CONGRATULATIONS! ACCOUNT VERIFIED</b> ✅\n\n` +
+    `Mubarak Ho Dear Trader! ❤️\n\n` +
+    `Aap ka Quotex Trading Account successfully Amir FX Community ke saath verify ho chuka hai.\n\n` +
+    `🆔 Trader ID: <b>${traderId}</b>\n💰 Available Balance: <b>${money(balance)}</b>\n\n` +
+    `<b>Available Services:</b>\n\n` +
+    `🚀 1. Quotex Trading Series\nStarting balance: $100 | Target: $500 | Duration: 2 Days\n\n` +
+    `👑 2. Quotex VIP Trading Sessions\nMinimum account balance: $50\n\n` +
+    `🤖 3. Quotex AI Bot License Key\nMinimum account balance: $50\n\n` +
+    `💎 4. One-to-One Trading Session\nMinimum account balance: $300 | 50/50 profit sharing\n\n` +
+    `Ab aap hamari available trading services select kar sakte hain 👇`
+  );
 }
 
 export function servicesMenuText(): string {
   return "🎯 <b>Meri Services</b>\n\nApni service select karein 👇";
 }
 
+/** Full service description shown when a verified user taps a service. */
+export function serviceIntroText(service: ServiceInfo): string {
+  const min = money(service.min_balance);
+  switch (service.service_key) {
+    case "trading_series":
+      return (
+        `🚀 <b>AMIR FX QUOTEX TRADING SERIES</b>\n\n💰 <b>$100 TO $500 TRADING SERIES</b>\n\n` +
+        `Starting Balance: $100\nTarget Balance: $500\nDuration: 2 Days\nPlatform: Quotex\n\n` +
+        `Join karne ke liye minimum ${min} account balance zaroori hai.\n\n` +
+        `Apni Trader ID send karein taake account aur balance verify kiya ja sake.`
+      );
+    case "vip_sessions":
+      return (
+        `👑 <b>AMIR FX QUOTEX VIP TRADING SESSIONS</b>\n\nVIP Sessions join karne ke liye:\n\n` +
+        `Minimum Balance: ${min}\nPlatform: Quotex\nService: VIP Trading Sessions\n\n` +
+        `Apni Trader ID send karein. Verification successful hone ke baad VIP Group access provide kiya jayega.`
+      );
+    case "ai_license":
+      return (
+        `🤖 <b>AMIR FX QUOTEX AI TRADING BOT</b>\n\n🔑 <b>GET YOUR BOT LICENSE KEY</b>\n\nRequirements:\n\n` +
+        `Service: AI Trading Bot\nMinimum Balance: ${min}\nPlatform: Quotex\n\n` +
+        `Apni Trader ID send karein. Account aur balance verification successful hone ke baad aap ko AI Bot License Key provide ki jayegi.`
+      );
+    case "one_to_one":
+      return (
+        `💎 <b>AMIR FX PREMIUM ONE-TO-ONE TRADING SESSION</b>\n\n👑 <b>PERSONAL TRADING & ACCOUNT MANAGEMENT</b>\n\nRequirements:\n\n` +
+        `Minimum Account Balance: ${min}\nProfit Sharing: 50% Amir FX / 50% Client\nPlatform: Quotex\nSession Timing: After Account Verification\n\n` +
+        `<b>Important Rules:</b>\n` +
+        `• Trading capital aap ke apne Quotex account mein rahega.\n` +
+        `• Kisi admin ya third party ko investment transfer nahi karni.\n` +
+        `• Profit sharing actual realized net profit par applicable hogi.\n` +
+        `• Session booking successful verification ke baad hogi.\n\n` +
+        `Apni Trader ID send karein aur verification complete karein.`
+      );
+    default:
+      return `🎯 <b>${service.title}</b>\n📌 Required balance: <b>${min}</b>\n\nApni Trader ID send karein.`;
+  }
+}
+
+/** Service-specific "balance too low" message from the owner's script. */
 export function insufficientText(service: ServiceInfo, balance: number): string {
+  const min = money(service.min_balance);
+  const heads: Record<string, string> = {
+    trading_series: "⚠️ <b>INSUFFICIENT ACCOUNT BALANCE</b>",
+    vip_sessions: "⚠️ <b>VIP SESSION REQUIREMENT NOT COMPLETED</b>",
+    ai_license: "⚠️ <b>BOT LICENSE REQUIREMENT INCOMPLETE</b>",
+    one_to_one: "⚠️ <b>ONE-TO-ONE SESSION REQUIREMENT INCOMPLETE</b>",
+  };
+  const tail =
+    service.service_key === "one_to_one"
+      ? "Kindly required balance complete karein. Verification ke baad session timing provide kar di jayegi."
+      : "Kindly required balance complete karein aur apni Trader ID dobara send karein.";
   return (
-    `🎯 <b>${service.title}</b>\n\n` +
-    `💰 Aap ka current balance: <b>${money(balance)}</b>\n` +
-    `📌 Required balance: <b>${money(service.min_balance)}</b>\n\n` +
-    `⚠️ Aap ka current balance eligible nahi hai.\n` +
-    `👉 Deposit <b>${money(shortfall(balance, service.min_balance))}</b> karein taake aap eligible ho jayein, phir apni Trader ID dobara bhejein.`
+    `${heads[service.service_key] ?? "⚠️ <b>INSUFFICIENT ACCOUNT BALANCE</b>"}\n\n` +
+    `Aap ki Trader ID verify ho gayi hai, lekin aap ke account mein minimum ${min} balance available nahi hai.\n\n` +
+    `💰 Current balance: <b>${money(balance)}</b>\n` +
+    `👉 Deposit <b>${money(shortfall(balance, service.min_balance))}</b> aur karein.\n\n` +
+    tail
   );
 }
 
 export function depositCheckInsufficientText(service: ServiceInfo, balance: number): string {
-  return (
-    `💰 Aap ka current balance: <b>${money(balance)}</b>\n` +
-    `📌 Required: <b>${money(service.min_balance)}</b>\n\n` +
-    `⚠️ Aap ka current balance abhi eligible nahi hai.\n` +
-    `👉 Deposit <b>${money(shortfall(balance, service.min_balance))}</b> karein, phir apni Trader ID dobara bhejein taake main balance verify kar sakoon.`
-  );
+  return insufficientText(service, balance);
 }
 
 export function linkText(service: ServiceInfo): string {
