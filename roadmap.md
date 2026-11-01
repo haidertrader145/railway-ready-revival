@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Add free-service and own-broker-account VIP funding guidance to the existing agent; preserve loss-support routing and verify both paths.
+
 - [x] Remove the current-ID lock so users can verify different IDs, while preserving permanent cross-account ownership and fresh balance checks; four webhook regression tests pass.
 
 - [x] Recommend free learning and community support in chat, without loss-recovery promises or deposit pressure; 19 targeted tests pass
