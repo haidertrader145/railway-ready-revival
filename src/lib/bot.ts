@@ -331,12 +331,12 @@ export function pendingRequestText(traderId: string): string {
 
 /** Loss/distress messages receive free education support, not deposit promotion. */
 export function needsFreeLearningSupport(text: string): boolean {
-  return /\b(loss(?:es)?|lost\s+(?:my\s+)?money|lost\s+(?:everything|all)|recover\s+(?:my\s+)?loss|majboor|majbur|majb[oou]+ri|broke|can't\s+afford|cannot\s+afford|qarz|karz|nuksan|nuqsan|nuksaan|nuqsaan)\b|پیسے.*(?:کھو|ہار)|نقصان|مجبور|قرض/i.test(text);
+  return /\b(loss(?:es)?|lost\s+(?:my\s+)?money|lost\s+(?:everything|all)|recover\s+(?:my\s+)?loss|worried|worry|anxious|majboor|majbur|majb[oou]+ri|pareshan|broke|can't\s+afford|cannot\s+afford|qarz|karz|nuksan|nuqsan|nuksaan|nuqsaan)\b|پیسے.*(?:کھو|ہار)|نقصان|مجبور|قرض|پریشان/i.test(text);
 }
 
 export function freeLearningSupportReply(settings: BotSettings): string {
   return [
-    "Aap ke loss ya pareshani ka sun kar afsos hua. Amir FX Community mein aap free learning se shuru kar sakte hain.",
+    "Aap ki pareshani samajh sakte hain. Amir FX Community mein aap free learning aur educational support se shuru kar sakte hain.",
     "Abhi loss recover karne ke liye mazeed deposit ya trade karne ka pressure na lein; pehle break aur learning par focus karein.",
     settings.youtube_link ? `Hamari free classes: ${settings.youtube_link}` : "Main Menu mein Trading Learning – Free Classes select karein.",
     "Free learning ke liye deposit zaroori nahi; learning se loss recovery ki guarantee nahi hoti.",
@@ -365,6 +365,14 @@ export function chatAgentSystemPrompt(settings: BotSettings, services: ServiceIn
     ...(svc.length ? svc : [`- (abhi services list khali hai)`]),
     ``,
     `RULES:`,
+    `ADDITIONAL GUIDANCE — FREE SERVICES, BROKER FUNDING AND VIP JOINING:`,
+    `- Hamari trading education, signals aur community services free hain. Service eligibility ke liye broker account balance ki shart service fee nahi hai; paisay hamein nahi dene.`,
+    `- Interested user VIP join karna chahe to clear call to action dein: "VIP access ke liye aap ke apne Quotex broker account mein kam az kam $50 balance hona chahiye." Agar pehle se required balance hai to mazeed deposit ki zaroorat nahi. Current service list ke actual minimum balance ko follow karein.`,
+    `- Normal joining sawalon mein steps samjhayein: CREATE FREE QUOTEX ACCOUNT button se configured community registration link par account banayein; agar balance required minimum se kam ho to sirf apne broker account ko directly fund karein; Quotex Trading button se Trader ID verify karein; phir VIP Sessions select karein. Funds customer ke apne broker account mein aur unke control mein rehte hain, Amir FX ko transfer nahi hote.`,
+    `- Account setup, deposits aur VIP eligibility ke sawalon ka seedha jawab dein aur interested customers ko community join karne ki dawat dein. Deposits ko free services ki payment ya guaranteed protection na kahein.`,
+    `- Genuine past performance ko sirf supplied, documented results ki bunyaad par confidently discuss karein. Abhi performance records supplied nahi hain: win rate, returns, testimonials ya results invent na karein; past performance future profits ki guarantee nahi.`,
+    `- Agar user worried, anxious, pareshan ho ya losses report kare to hamdardi aur free educational support offer karein; VIP funding ka call to action, additional deposit ya loss recovery promotion na dein. Yeh safety rule normal joining invitations par priority rakhta hai.`,
+    `EXISTING RULES (CONTINUE TO APPLY):`,
     `- Relevant jawab mein Amir FX Community ki free learning aur educational support recommend karein. Free classes ke liye deposit ya Trader ID verification ki shart na lagayein. Sirf configured YouTube link share karein; VIP ya Trading Series ko free community ka link samajh kar share na karein.`,
     `- Hamesha Amir FX Community ke baare mein positive, confident aur supportive lehje mein baat karein. Community, Amir sahab ya services ki kabhi burai, shak ya negative comparison na karein, aur user ko dosri communities, bots ya websites ki taraf na bhejein.`,
     `- Aam sawalon (jo loss ya financial pareshani ke baare mein na hon) mein user ko hamari services — VIP Sessions, Trading Series, AI License aur One-to-One — join karne ki dawat dein, unke faide (seekhna, live sessions, guidance) aur minimum deposit batayein, aur agla step (account banana → Trader ID verify → service chunna) samjhayein.`,
