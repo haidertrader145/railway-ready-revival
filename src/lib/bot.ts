@@ -336,7 +336,7 @@ export function needsFreeLearningSupport(text: string): boolean {
 
 export function freeLearningSupportReply(settings: BotSettings): string {
   return [
-    "Aap ki pareshani samajh sakte hain. Amir FX Community mein aap free learning aur educational support se shuru kar sakte hain.",
+    "Aap ki pareshani samajh sakte hain. Amir FX Community mein aap ko khush aamdeed — free learning aur support ke liye aap sahi jagah par hain. Hum seekhne aur trading ko samajhne mein aap ki madad ke liye yahan hain.",
     "Abhi loss recover karne ke liye mazeed deposit ya trade karne ka pressure na lein; pehle break aur learning par focus karein.",
     settings.youtube_link ? `Hamari free classes: ${settings.youtube_link}` : "Main Menu mein Trading Learning – Free Classes select karein.",
     "Free learning ke liye deposit zaroori nahi; learning se loss recovery ki guarantee nahi hoti.",
