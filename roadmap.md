@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Add free-service and own-broker-account VIP funding guidance to the existing agent; preserve loss-support routing and verify both paths.
+- [x] Add free-service and own-broker-account VIP funding guidance to the existing agent; worried/loss messages bypass promotional AI, 28 targeted tests pass. Live Telegram wording remains unverified until published.
 
 - [x] Remove the current-ID lock so users can verify different IDs, while preserving permanent cross-account ownership and fresh balance checks; four webhook regression tests pass.
 
