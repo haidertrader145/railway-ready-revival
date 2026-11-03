@@ -42,16 +42,11 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
         const E = await import("@/lib/bot.server");
 
         try {
-          await E.cleanupExpired().catch(() => {});
-
           if (update.callback_query) {
             const cq = update.callback_query;
             const chatId = cq.message?.chat.id;
             await telegramCall("answerCallbackQuery", { callback_query_id: cq.id }).catch(() => {});
             if (!chatId) return Response.json({ ok: true });
-            // Keep the chat tidy: old bot messages go as soon as a new action comes in.
-            if (cq.message) await E.deleteMsg(chatId, cq.message.message_id);
-            await E.clearChat(chatId);
             await handleButton(chatId, cq.data ?? "", E);
             return Response.json({ ok: true });
           }
@@ -61,11 +56,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           const text = msg?.text?.trim();
 
           if (!chatId || !text || msg?.chat?.type !== "private") return Response.json({ ok: true });
-
-          const settings = await E.loadSettings();
-          // New message in: clear the previous bot messages first.
-          await E.clearChat(chatId);
-          if (msg.message_id) await E.track(chatId, msg.message_id, settings.autodelete_minutes);
 
           if (text.startsWith("/start")) {
             await E.sendWelcome(chatId);

@@ -10,8 +10,6 @@ const FIELDS: { key: string; label: string; multiline?: boolean }[] = [
   { key: "quotex_reg_link", label: "Quotex registration link" },
   { key: "youtube_link", label: "YouTube Premium Classes playlist link" },
   { key: "onetoone_timings", label: "One-to-One session timings", multiline: true },
-  { key: "autodelete_minutes", label: "Auto-delete bot messages after (minutes, 0 = never)" },
-  { key: "link_delete_minutes", label: "Delete group links after (minutes)" },
 ];
 
 const input =
