@@ -1,0 +1,2 @@
+DELETE FROM public.bot_settings WHERE key IN ('autodelete_minutes', 'link_delete_minutes');
+COMMENT ON TABLE public.bot_messages IS 'DEPRECATED: auto-delete removed, the app no longer tracks or deletes messages; kept for zero-downtime compatibility';
