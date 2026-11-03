@@ -1,5 +1,5 @@
-// Server-only bot engine: settings, tracked messages (auto-delete), menus and
-// verification outcomes. Shared by the webhook, bridge callback and admin.
+// Server-only bot engine: settings, menus and verification outcomes. Shared by
+// the webhook, bridge callback and admin. Messages are never auto-deleted.
 import { parseAffiliateReply } from "@/lib/affiliate-reply";
 import * as B from "@/lib/bot";
 import { telegramCall } from "@/lib/telegram.server";
@@ -16,8 +16,6 @@ export async function loadSettings(): Promise<B.BotSettings> {
   return {
     ...B.DEFAULT_SETTINGS,
     ...Object.fromEntries(Object.entries(map).filter(([, v]) => v !== "")),
-    autodelete_minutes: Number(map["autodelete_minutes"] || B.DEFAULT_SETTINGS.autodelete_minutes),
-    link_delete_minutes: Number(map["link_delete_minutes"] || B.DEFAULT_SETTINGS.link_delete_minutes),
   } as B.BotSettings;
 }
 
@@ -27,21 +25,10 @@ export async function loadServices(): Promise<B.ServiceInfo[]> {
   return (data ?? []).map((s) => ({ ...s, min_balance: Number(s.min_balance) }));
 }
 
-export async function track(chatId: number, messageId: number, minutes: number) {
-  if (!minutes || minutes <= 0) return;
-  const sb = await db();
-  await sb.from("bot_messages").insert({
-    chat_id: chatId,
-    message_id: messageId,
-    delete_after: new Date(Date.now() + minutes * 60_000).toISOString(),
-  });
-}
-
-/** Sends a message and schedules it for auto-delete. ttl 0 = keep forever.
- * Every message gets the clickable "Register Now" button. */
-export async function say(chatId: number, text: string, keyboard?: B.InlineKeyboard, ttl?: number) {
+/** Sends a message. Every message gets the clickable "Register Now" button.
+ * Messages are kept forever — nothing is ever auto-deleted. */
+export async function say(chatId: number, text: string, keyboard?: B.InlineKeyboard) {
   const settings = await loadSettings();
-  const ttlMin = ttl ?? settings.autodelete_minutes;
   const rows: B.InlineButton[][] = [];
   if (keyboard) rows.push(...keyboard.inline_keyboard);
   const reg = B.regButtonRow(settings.quotex_reg_link);
@@ -54,7 +41,6 @@ export async function say(chatId: number, text: string, keyboard?: B.InlineKeybo
     disable_web_page_preview: true,
     ...(kb ? { reply_markup: kb } : {}),
   });
-  await track(chatId, res.message_id, ttlMin);
   return res;
 }
 
@@ -68,27 +54,6 @@ export async function expireStalePending(): Promise<void> {
     .update({ status: "expired", resolved_at: new Date().toISOString() })
     .eq("status", "pending")
     .lt("created_at", cutoff);
-}
-
-export async function deleteMsg(chatId: number, messageId: number) {
-  try {
-    await telegramCall("deleteMessage", { chat_id: chatId, message_id: messageId });
-  } catch {
-    // already gone / too old
-  }
-}
-
-/** Deletes expired tracked messages. Called on every webhook hit. */
-export async function cleanupExpired() {
-  const sb = await db();
-  const { data } = await sb
-    .from("bot_messages")
-    .select("id, chat_id, message_id")
-    .lte("delete_after", new Date().toISOString())
-    .limit(30);
-  if (!data?.length) return;
-  await Promise.all(data.map((m) => deleteMsg(m.chat_id, m.message_id)));
-  await sb.from("bot_messages").delete().in("id", data.map((m) => m.id));
 }
 
 export async function getUser(chatId: number) {
@@ -123,8 +88,8 @@ export async function showMainMenu(chatId: number) {
   await say(chatId, B.mainMenuText(s), B.mainMenuKeyboard(!!u?.trader_verified));
 }
 
-/** Sends a plain-text (no HTML) message and schedules it for auto-delete.
- * Every message gets the clickable "Register Now" button. */
+/** Sends a plain-text (no HTML) message. Every message gets the clickable
+ * "Register Now" button. Messages are kept forever. */
 export async function sayPlain(chatId: number, text: string, keyboard?: B.InlineKeyboard) {
   const settings = await loadSettings();
   const rows: B.InlineButton[][] = [];
@@ -138,7 +103,6 @@ export async function sayPlain(chatId: number, text: string, keyboard?: B.Inline
     disable_web_page_preview: true,
     ...(kb ? { reply_markup: kb } : {}),
   });
-  await track(chatId, res.message_id, settings.autodelete_minutes);
   return res;
 }
 
@@ -163,17 +127,6 @@ export async function handleChatMessage(chatId: number, text: string, request: R
 export async function showServices(chatId: number) {
   await setUser(chatId, { state: "services" });
   await say(chatId, B.servicesMenuText(), B.servicesKeyboard(await loadServices()));
-}
-
-/** Deletes every tracked (auto-delete) message in this chat right away, so
- * only the newest exchange stays visible. Untracked messages — license
- * keys — are never touched. */
-export async function clearChat(chatId: number) {
-  const sb = await db();
-  const { data } = await sb.from("bot_messages").select("id, message_id").eq("chat_id", chatId).limit(100);
-  if (!data?.length) return;
-  await Promise.all(data.map((m) => deleteMsg(chatId, m.message_id)));
-  await sb.from("bot_messages").delete().in("id", data.map((m) => m.id));
 }
 
 export async function sendWelcome(chatId: number) {
@@ -278,7 +231,7 @@ async function deliverService(
       .eq("status", "issued")
       .maybeSingle();
     if (existing) {
-      await say(chatId, B.alreadyVerifiedKeyText(traderId, existing.key), nav, 0);
+      await say(chatId, B.alreadyVerifiedKeyText(traderId, existing.key), nav);
       return;
     }
     const { data: key } = await sb.from("license_keys").select("id, key").eq("status", "available").limit(1).maybeSingle();
@@ -295,7 +248,7 @@ async function deliverService(
     await sb
       .from("verified_users")
       .upsert({ chat_id: chatId, trader_id: traderId, license_key_id: key.id }, { onConflict: "chat_id" });
-    await say(chatId, B.licenseText(key.key), nav, 0); // keys are kept
+    await say(chatId, B.licenseText(key.key), nav);
     return;
   }
 
@@ -313,7 +266,7 @@ async function deliverService(
         `"I need one on one personal session, I have verified my id."`,
       parse_mode: "HTML",
     }).catch((e) => console.error("one-to-one notify failed:", e));
-    await say(chatId, B.oneToOneText(settings), nav, 0);
+    await say(chatId, B.oneToOneText(settings), nav);
     return;
   }
 
@@ -323,12 +276,9 @@ async function deliverService(
     await say(chatId, "ℹ️ Group link jald share kiya jaye ga — team aap se rabta kare gi.", nav);
     return;
   }
-  await say(
-    chatId,
-    B.linkText(service),
-    { inline_keyboard: [[{ text: "🚀 Group Join Karein", url: service.invite_link } as never], B.navRow()] },
-    settings.link_delete_minutes,
-  );
+  await say(chatId, B.linkText(service), {
+    inline_keyboard: [[{ text: "🚀 Group Join Karein", url: service.invite_link } as never], B.navRow()],
+  });
 }
 
 export function verdictFromReply(reply: string, traderId: string) {
