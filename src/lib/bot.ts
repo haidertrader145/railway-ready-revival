@@ -18,8 +18,6 @@ export interface BotSettings {
   youtube_link: string;
   onetoone_timings: string;
   onetoone_handle: string;
-  autodelete_minutes: number;
-  link_delete_minutes: number;
 }
 
 export const DEFAULT_SETTINGS: BotSettings = {
@@ -35,8 +33,6 @@ export const DEFAULT_SETTINGS: BotSettings = {
   onetoone_timings:
     "One-to-One sessions weekly schedule par hote hain. Timing confirm karne ke liye admin se rabta karein.",
   onetoone_handle: "@amirtrader540",
-  autodelete_minutes: 10,
-  link_delete_minutes: 60,
 };
 
 export interface InlineButton {

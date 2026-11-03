@@ -17,12 +17,8 @@ vi.mock("@/lib/telegram.server", () => ({
   telegramCall: async () => ({}),
 }));
 vi.mock("@/lib/bot.server", () => ({
-  cleanupExpired: async () => {},
-  clearChat: async () => {},
-  deleteMsg: async () => {},
-  track: async () => {},
   expireStalePending: async () => {},
-  loadSettings: async () => ({ autodelete_minutes: 10 }),
+  loadSettings: async () => ({}),
   getUser: async () => mocks.user,
   traderIdOwnedByAnother: async () => mocks.owned,
   setUser: mocks.setUser,
