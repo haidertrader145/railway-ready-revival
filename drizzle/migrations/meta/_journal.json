@@ -36,6 +36,13 @@
       "when": 1793696739356,
       "tag": "0004_remove_auto_delete",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793889950566,
+      "tag": "0005_bot_faqs",
+      "breakpoints": true
     }
   ]
 }
