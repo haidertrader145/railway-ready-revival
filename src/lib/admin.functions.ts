@@ -210,3 +210,44 @@ export const unverifyUser = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const listFaqs = createServerFn({ method: "GET" }).handler(async () => {
+  await requireUnlocked();
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin.from("bot_faqs").select("id, question, answer").order("created_at", { ascending: false });
+  return data ?? [];
+});
+
+export const addFaqsBulk = createServerFn({ method: "POST" })
+  .inputValidator((input: { text: string }) => z.object({ text: z.string().min(1).max(100000) }).parse(input))
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    const { parseBulkFaqs } = await import("@/lib/bot");
+    const rows = parseBulkFaqs(data.text);
+    if (!rows.length) throw new Error('No questions found. Use "Q:" and "A:" lines.');
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("bot_faqs").insert(rows);
+    if (error) throw new Error(error.message);
+    return { added: rows.length };
+  });
+
+export const updateFaq = createServerFn({ method: "POST" })
+  .inputValidator((input: { id: string; question: string; answer: string }) =>
+    z.object({ id: z.string().uuid(), question: z.string().min(1).max(2000), answer: z.string().min(1).max(4000) }).parse(input),
+  )
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("bot_faqs").update({ question: data.question, answer: data.answer }).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteFaq = createServerFn({ method: "POST" })
+  .inputValidator((input: { id: string }) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("bot_faqs").delete().eq("id", data.id);
+    return { ok: true };
+  });

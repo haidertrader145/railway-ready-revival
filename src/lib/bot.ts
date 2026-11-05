@@ -380,3 +380,61 @@ export function chatAgentSystemPrompt(settings: BotSettings, services: ServiceIn
     `- Jawab chhota rakhein aur user ko agla step clearly batayein.`,
   ].join("\n");
 }
+
+// ---------- Custom Q&A (admin-managed) ----------
+export type Faq = { question: string; answer: string };
+
+/** Buttons under every custom answer: Back, Main Menu, Meri Services. */
+export function faqKeyboard(): InlineKeyboard {
+  return { inline_keyboard: [navRow(), [{ text: "🎯 Meri Services", callback_data: "m:services" }]] };
+}
+
+function faqTokens(s: string): string[] {
+  return s.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, " ").split(/\s+/).filter((w) => w.length > 1);
+}
+
+/** Parses bulk text: blocks of "Q: ..." then "A: ..." (answer may span lines).
+ * Several question variants can share one answer using " | ". */
+export function parseBulkFaqs(text: string): Faq[] {
+  const out: Faq[] = [];
+  let q: string | null = null;
+  let a: string[] = [];
+  const flush = () => {
+    if (q && a.join("\n").trim()) out.push({ question: q.trim(), answer: a.join("\n").trim() });
+    q = null; a = [];
+  };
+  for (const line of text.split(/\r?\n/)) {
+    const qm = line.match(/^\s*(?:Q|Question)\s*[:\-]\s*(.*)$/i);
+    const am = line.match(/^\s*(?:A|Answer)\s*[:\-]\s*(.*)$/i);
+    if (qm) { flush(); q = qm[1] ?? ""; }
+    else if (am && q !== null) a = [am[1] ?? ""];
+    else if (q !== null && a.length) a.push(line);
+  }
+  flush();
+  return out;
+}
+
+/** Finds the best matching custom answer for a user message, or null. */
+export function matchFaq(text: string, faqs: Faq[]): Faq | null {
+  const msg = faqTokens(text);
+  if (!msg.length) return null;
+  const msgSet = new Set(msg);
+  const norm = msg.join(" ");
+  let best: Faq | null = null;
+  let bestScore = 0;
+  for (const f of faqs) {
+    for (const variant of f.question.split("|")) {
+      const qt = faqTokens(variant);
+      if (!qt.length) continue;
+      const qn = qt.join(" ");
+      let score: number;
+      if (qn === norm || norm.includes(qn)) score = 1;
+      else {
+        const hits = qt.filter((w) => msgSet.has(w)).length;
+        score = hits / Math.max(qt.length, msg.length);
+      }
+      if (score > bestScore) { bestScore = score; best = f; }
+    }
+  }
+  return bestScore >= 0.5 ? best : null;
+}

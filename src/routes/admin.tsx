@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useState } from "react";
 
 import { BotSettingsPanel } from "@/components/BotSettingsPanel";
+import { FaqPanel } from "@/components/FaqPanel";
 import { BridgePanel } from "@/components/BridgePanel";
 import { addLicenseKeys, getAdminOverview, resolveRequest, unverifyUser } from "@/lib/admin.functions";
 
@@ -49,7 +50,7 @@ function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [newKeys, setNewKeys] = useState("");
   const [saving, setSaving] = useState(false);
-  const [tab, setTab] = useState<"requests" | "keys" | "users" | "settings">("requests");
+  const [tab, setTab] = useState<"requests" | "keys" | "users" | "settings" | "q&a">("requests");
 
   const load = useCallback(async () => {
     try {
@@ -143,7 +144,7 @@ function AdminPage() {
         <BridgePanel />
 
         <div className="mt-6 flex gap-2">
-          {(["requests", "keys", "users", "settings"] as const).map((t) => (
+          {(["requests", "keys", "users", "settings", "q&a"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -305,6 +306,7 @@ function AdminPage() {
         )}
 
         {tab === "settings" && <BotSettingsPanel />}
+        {tab === "q&a" && <FaqPanel />}
       </main>
     </div>
   );

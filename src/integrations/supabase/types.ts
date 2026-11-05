@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      bot_faqs: {
+        Row: {
+          answer: string
+          created_at: string
+          id: string
+          question: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: string
+          question: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: string
+          question?: string
+        }
+        Relationships: []
+      }
       bot_messages: {
         Row: {
           chat_id: number
