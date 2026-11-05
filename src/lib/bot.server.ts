@@ -111,6 +111,16 @@ export async function sayPlain(chatId: number, text: string, keyboard?: B.Inline
  * agent is unavailable or fails, the user falls back to the main menu. */
 export async function handleChatMessage(chatId: number, text: string, request: Request) {
   try {
+    if (!B.needsFreeLearningSupport(text)) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: faqs } = await supabaseAdmin.from("bot_faqs").select("question, answer").limit(1000);
+      const hit = B.matchFaq(text, faqs ?? []);
+      if (hit) {
+        await setUser(chatId, { state: "chat" });
+        await sayPlain(chatId, hit.answer, B.faqKeyboard());
+        return;
+      }
+    }
     const { chatAgentReply } = await import("@/lib/chat-agent.server");
     const reply = await chatAgentReply(request, { text, chatId });
     if (reply) {
