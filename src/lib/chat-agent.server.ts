@@ -5,7 +5,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, type ModelMessage } from "ai";
 
 import { createLovableAiGatewayRunIdFetch, getLovableAiGatewayRunId } from "@/lib/ai-run-id.server";
-import { loadServices, loadSettings } from "@/lib/bot.server";
+import { loadFaqs, loadServices, loadSettings } from "@/lib/bot.server";
 import * as B from "@/lib/bot";
 
 const CHAT_MODEL = "openai/gpt-6-astra";
@@ -20,7 +20,7 @@ export async function chatAgentReply(
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) return null;
 
-  const [settings, services] = await Promise.all([loadSettings(), loadServices()]);
+  const [settings, services, faqs] = await Promise.all([loadSettings(), loadServices(), loadFaqs()]);
   const runIdFetch = createLovableAiGatewayRunIdFetch(getLovableAiGatewayRunId(request));
   const provider = createOpenAI({
     baseURL: "https://ai.gateway.lovable.dev/v1",
@@ -35,7 +35,7 @@ export async function chatAgentReply(
 
   const result = streamText({
     model: provider.responses(CHAT_MODEL),
-    system: B.chatAgentSystemPrompt(settings, services),
+    system: B.chatAgentSystemPrompt(settings, services, faqs),
     messages,
     abortSignal: request.signal,
     maxOutputTokens: 600,

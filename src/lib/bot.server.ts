@@ -25,6 +25,13 @@ export async function loadServices(): Promise<B.ServiceInfo[]> {
   return (data ?? []).map((s) => ({ ...s, min_balance: Number(s.min_balance) }));
 }
 
+export async function loadFaqs(): Promise<B.Faq[]> {
+  const sb = await db();
+  const { data, error } = await sb.from("bot_faqs").select("question, answer").order("created_at").limit(1000);
+  if (error) throw error;
+  return data ?? [];
+}
+
 /** Sends a message. Every message gets the clickable "Register Now" button.
  * Messages are kept forever — nothing is ever auto-deleted. */
 export async function say(chatId: number, text: string, keyboard?: B.InlineKeyboard) {
@@ -112,9 +119,7 @@ export async function sayPlain(chatId: number, text: string, keyboard?: B.Inline
 export async function handleChatMessage(chatId: number, text: string, request: Request) {
   try {
     if (!B.needsFreeLearningSupport(text)) {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { data: faqs } = await supabaseAdmin.from("bot_faqs").select("question, answer").limit(1000);
-      const hit = B.matchFaq(text, faqs ?? []);
+      const hit = B.matchFaq(text, await loadFaqs());
       if (hit) {
         await setUser(chatId, { state: "chat" });
         await sayPlain(chatId, hit.answer, B.faqKeyboard());
@@ -125,7 +130,7 @@ export async function handleChatMessage(chatId: number, text: string, request: R
     const reply = await chatAgentReply(request, { text, chatId });
     if (reply) {
       await setUser(chatId, { state: "chat" });
-      await sayPlain(chatId, reply, { inline_keyboard: [B.navRow()] });
+      await sayPlain(chatId, reply, B.faqKeyboard());
       return;
     }
   } catch (err) {
