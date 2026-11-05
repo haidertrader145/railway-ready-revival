@@ -12,6 +12,7 @@
 ## Architecture rules
 
 - Route financial-loss/distress chat to a deterministic free-learning reply before calling AI, so deposit promotion cannot be generated for these messages.
+- Load admin Q&A as data into the existing chat agent for ordinary paraphrases; direct matches remain deterministic and Trader-ID-only states bypass chat.
 
 - All Telegram Bot API calls go through the Lovable connector gateway (`telegram.server.ts`), so `LOVABLE_API_KEY` + `TELEGRAM_API_KEY` are required at runtime on any host — never swap to direct api.telegram.org calls with a raw bot token.
 - Bot data tables (bot_users, service_config, bot_settings, bot_messages, verification_requests, license_keys, verified_users, bridge_state) are service-role only: RLS enabled, no policies, no anon/authenticated grants.
