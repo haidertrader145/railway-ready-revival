@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useState } from "react";
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 import { BotSettingsPanel } from "@/components/BotSettingsPanel";
 import { FaqPanel } from "@/components/FaqPanel";
 import { BridgePanel } from "@/components/BridgePanel";
-import { addLicenseKeys, getAdminOverview, resolveRequest, unverifyUser } from "@/lib/admin.functions";
+import { addLicenseKeys, deleteLicenseKey, getAdminOverview, resolveRequest, unverifyUser } from "@/lib/admin.functions";
 
 type Overview = Awaited<ReturnType<typeof getAdminOverview>>;
 
@@ -43,6 +45,7 @@ function StatusBadge({ status }: { status: string }) {
 function AdminPage() {
   const fetchOverview = useServerFn(getAdminOverview);
   const postKeys = useServerFn(addLicenseKeys);
+  const postDeleteKey = useServerFn(deleteLicenseKey);
   const postResolve = useServerFn(resolveRequest);
   const postUnverify = useServerFn(unverifyUser);
 
@@ -50,6 +53,7 @@ function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [newKeys, setNewKeys] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deletingKey, setDeletingKey] = useState<number | null>(null);
   const [tab, setTab] = useState<"requests" | "keys" | "users" | "settings" | "q&a">("requests");
 
   const load = useCallback(async () => {
@@ -94,6 +98,20 @@ function AdminPage() {
       await load();
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed to resolve");
+    }
+  }
+
+  async function handleDeleteKey(id: number, status: string) {
+    const issuedWarning = status === "issued" ? " This does not revoke a key already delivered or erase the user's verification." : "";
+    if (!window.confirm(`Permanently delete this saved license key?${issuedWarning}`)) return;
+    setDeletingKey(id);
+    try {
+      await postDeleteKey({ data: { id } });
+      await load();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to delete key");
+    } finally {
+      setDeletingKey(null);
     }
   }
 
@@ -243,6 +261,7 @@ function AdminPage() {
                       <th className="pb-2 pr-4 font-medium">Status</th>
                       <th className="pb-2 pr-4 font-medium">Issued to</th>
                       <th className="pb-2 font-medium">Issued at</th>
+                      <th className="pb-2 pl-4 font-medium">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -252,10 +271,22 @@ function AdminPage() {
                         <td className="py-2 pr-4"><StatusBadge status={k.status} /></td>
                         <td className="py-2 pr-4 font-mono text-muted-foreground">{k.issued_to_trader_id ?? "—"}</td>
                         <td className="py-2 text-muted-foreground">{k.issued_at ? new Date(k.issued_at).toLocaleString() : "—"}</td>
+                        <td className="py-2 pl-4">
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            title="Delete license key"
+                            aria-label={`Delete license key ${k.id}`}
+                            disabled={deletingKey !== null}
+                            onClick={() => handleDeleteKey(k.id, k.status)}
+                          >
+                            <Trash2 />
+                          </Button>
+                        </td>
                       </tr>
                     ))}
                     {data.keys.length === 0 && (
-                      <tr><td colSpan={4} className="py-6 text-center text-muted-foreground">No keys yet — add some above.</td></tr>
+                      <tr><td colSpan={5} className="py-6 text-center text-muted-foreground">No keys yet — add some above.</td></tr>
                     )}
                   </tbody>
                 </table>

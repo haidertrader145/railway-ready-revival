@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Add per-key admin deletion with confirmation and refreshed counts; real temporary-key creation/cancel/delete/reload verified.
+- [x] Send the exact personal-session request separately without extra text or buttons; delivery test passes, all 45 tests pass. Live Telegram delivery needs publishing.
+
 - [x] Improve ordinary questions and requested links using saved Q&A knowledge; make distress support optional rather than pushing classes, preserving no recovery/deposit promotion; 23 targeted checks pass.
 - [ ] Verify real AI paraphrase answers after workspace AI credits are restored; live request returned 402 Not enough credits. Publishing remains needed.
 
