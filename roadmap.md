@@ -1,6 +1,7 @@
 # Roadmap
 
-- [ ] Improve ordinary questions and requested links using saved Q&A knowledge; make distress support optional rather than pushing classes, preserving no recovery/deposit promotion.
+- [x] Improve ordinary questions and requested links using saved Q&A knowledge; make distress support optional rather than pushing classes, preserving no recovery/deposit promotion; 23 targeted checks pass.
+- [ ] Verify real AI paraphrase answers after workspace AI credits are restored; live request returned 402 Not enough credits. Publishing remains needed.
 
 - [x] Add free-service and own-broker-account VIP funding guidance to the existing agent; worried/loss messages bypass promotional AI, 28 targeted tests pass. Live Telegram wording remains unverified until published.
 
