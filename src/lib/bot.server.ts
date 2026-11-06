@@ -282,6 +282,8 @@ async function deliverService(
       parse_mode: "HTML",
     }).catch((e) => console.error("one-to-one notify failed:", e));
     await say(chatId, B.oneToOneText(settings), nav);
+    // Copyable booking request: deliberately no registration/navigation buttons.
+    await telegramCall("sendMessage", { chat_id: chatId, text: B.PERSONAL_SESSION_REQUEST });
     return;
   }
 

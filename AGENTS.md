@@ -11,6 +11,9 @@
 
 ## Architecture rules
 
+- Personal-session delivery sends instructions through the normal button-bearing reply, followed by an exact plain Telegram message without markup so users can forward it unchanged.
+- Admin license deletion removes only the selected saved key record; it does not revoke externally delivered licenses or reset Trader ID verification.
+
 - Route financial-loss/distress chat to a deterministic free-learning reply before calling AI, so deposit promotion cannot be generated for these messages.
 - Load admin Q&A as data into the existing chat agent for ordinary paraphrases; direct matches remain deterministic and Trader-ID-only states bypass chat.
 

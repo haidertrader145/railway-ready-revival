@@ -291,13 +291,14 @@ export function noKeysText(): string {
   return "✅ Aap eligible hain! Lekin abhi license keys available nahi hain — team ko khabar kar di gayi hai aur aap ki key jald bhej di jaye gi.";
 }
 
+export const PERSONAL_SESSION_REQUEST = "I need one on one personal session, I have verified my id.";
+
 export function oneToOneText(settings: BotSettings): string {
   const handle = settings.onetoone_handle || DEFAULT_SETTINGS.onetoone_handle;
   return (
     `🎉 <b>Mubarak ho!</b> Aap One-to-One Session ke liye eligible hain.\n\n` +
     `📅 Available Session Timings:\n${settings.onetoone_timings}\n\n` +
-    `📲 Ab apni booking confirm karne ke liye <b>${handle}</b> ko yeh message bhejein:\n` +
-    `<blockquote>"I need one on one personal session, I have verified my id."</blockquote>\n\n` +
+    `📲 Ab apni booking confirm karne ke liye <b>${handle}</b> ko agla alag message bhejein.\n\n` +
     `⚠️ <b>Zaroori:</b> booking ke baad sirf ek message bhejein — iske baad koi aur message na bhejein, warna aap ko jawab nahi mile ga.`
   );
 }

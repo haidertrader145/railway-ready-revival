@@ -129,6 +129,22 @@ export const addLicenseKeys = createServerFn({ method: "POST" })
   });
 
 // Manual verification (used when the helper is offline).
+export const deleteLicenseKey = createServerFn({ method: "POST" })
+  .inputValidator((input: { id: number }) => z.object({ id: z.number().int().positive().safe() }).parse(input))
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: deleted, error } = await supabaseAdmin
+      .from("license_keys")
+      .delete()
+      .eq("id", data.id)
+      .select("id")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!deleted) throw new Error("License key not found; refresh the list.");
+    return { ok: true };
+  });
+
 // The admin must enter the balance they confirmed — it is never guessed.
 export const resolveRequest = createServerFn({ method: "POST" })
   .inputValidator((input: { requestId: string; verified: boolean; balance?: number }) =>
