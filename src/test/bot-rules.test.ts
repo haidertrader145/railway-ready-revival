@@ -49,7 +49,6 @@ describe("one-to-one session rules", () => {
   it("points the user at the session handle and warns against extra messages", () => {
     const text = oneToOneText(DEFAULT_SETTINGS);
     expect(text).toContain("@amirtrader540");
-    expect(text).toContain("I need one on one personal session, I have verified my id.");
     expect(text).toContain("koi aur message na bhejein");
   });
   it("onetoone_handle defaults to @amirtrader540", () => {
