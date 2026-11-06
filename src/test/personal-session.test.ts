@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DEFAULT_SETTINGS } from "@/lib/bot";
 
-const mocks = vi.hoisted(() => ({ telegram: vi.fn(async () => ({ message_id: 1 })) }));
+const mocks = vi.hoisted(() => ({ telegram: vi.fn(async (_method: string, _body: Record<string, unknown>) => ({ message_id: 1 })) }));
 vi.mock("@/lib/telegram.server", () => ({ telegramCall: mocks.telegram }));
 vi.mock("@/integrations/supabase/client.server", () => ({ supabaseAdmin: { from: (table: string) => {
   const query = {
