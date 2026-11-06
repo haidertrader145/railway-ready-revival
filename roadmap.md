@@ -1,5 +1,8 @@
 # Roadmap
 
+- [ ] Add per-key admin deletion with confirmation and refreshed counts.
+- [ ] Send the exact personal-session request separately without extra text or buttons; verify both changes.
+
 - [x] Improve ordinary questions and requested links using saved Q&A knowledge; make distress support optional rather than pushing classes, preserving no recovery/deposit promotion; 23 targeted checks pass.
 - [ ] Verify real AI paraphrase answers after workspace AI credits are restored; live request returned 402 Not enough credits. Publishing remains needed.
 
