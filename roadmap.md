@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Restrict private session contact in general chat to eligible bookings; add neutral service browsing to supportive loss/worry replies; exact saved questions now win over shorter matches. All 56 tests pass; 21 saved questions confirmed in admin. Loss-related Q&A remains subject to support safeguards; Telegram changes require publishing.
+
 - [x] Improve existing agent's data-grounded answers and clear failure messages; distress replies reassure without class/deposit/service promotion. Live service and registration-link questions answered successfully; 50 tests pass. Publishing required for Telegram.
 - [x] Add Delete all keys with typed confirmation; cancellation verified in admin, deletion behavior tested in isolation without destroying real keys.
 

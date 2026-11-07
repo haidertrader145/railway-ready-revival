@@ -143,6 +143,7 @@ async function handleButton(chatId: number, data: string, E: typeof import("@/li
   const user = await E.getUser(chatId);
 
   if (data === "nav:menu") return E.showMainMenu(chatId);
+  if (data === "m:browse") return E.showServiceOverview(chatId);
   if (data === "nav:back") {
     const st = user?.state ?? "";
     if (st.startsWith("awaiting_balance:") || (st === "services" && false)) return E.showServices(chatId);

@@ -53,5 +53,5 @@ export async function chatAgentReply(
 
   const text = (await result.text).trim();
   if (!text) throw new Error("AI returned no answer.");
-  return text;
+  return B.redactPrivateSessionContact(text, settings);
 }

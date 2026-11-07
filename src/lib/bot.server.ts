@@ -132,7 +132,7 @@ export async function handleChatMessage(chatId: number, text: string, request: R
       const hit = B.matchFaq(text, await loadChatFaqs());
       if (hit) {
         await setUser(chatId, { state: "chat" });
-        await sayPlain(chatId, hit.answer, B.faqKeyboard());
+        await sayPlain(chatId, B.redactPrivateSessionContact(hit.answer, await loadSettings()), B.faqKeyboard());
         return;
       }
     }
@@ -140,7 +140,11 @@ export async function handleChatMessage(chatId: number, text: string, request: R
     const reply = await chatAgentReply(request, { text, chatId });
     if (reply) {
       await setUser(chatId, { state: "chat" });
-      await sayPlain(chatId, reply, B.faqKeyboard());
+      const keyboard = B.faqKeyboard();
+      if (B.needsFreeLearningSupport(text)) {
+        keyboard.inline_keyboard.unshift([{ text: "📋 Services Dekhein", callback_data: "m:browse" }]);
+      }
+      await sayPlain(chatId, B.redactPrivateSessionContact(reply, await loadSettings()), keyboard);
       return;
     }
   } catch (err) {
@@ -154,6 +158,12 @@ export async function handleChatMessage(chatId: number, text: string, request: R
 export async function showServices(chatId: number) {
   await setUser(chatId, { state: "services" });
   await say(chatId, B.servicesMenuText(), B.servicesKeyboard(await loadServices()));
+}
+
+/** Public information only; browsing never grants service access or reveals booking details. */
+export async function showServiceOverview(chatId: number) {
+  const services = await loadServices();
+  await sayPlain(chatId, ["Amir FX — Available Services", ...services.map((service) => `• ${service.title}`), "Kisi service ke baare mein sawal ho to poochein. Yeh maloomat hai, success ya loss recovery ka wada nahi."].join("\n"), B.faqKeyboard());
 }
 
 export async function sendWelcome(chatId: number) {

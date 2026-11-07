@@ -15,6 +15,7 @@
 - Admin license deletion removes selected records or all records with explicit bulk confirmation; it does not revoke externally delivered licenses or reset Trader ID verification.
 
 - Route financial-loss/distress chat to a deterministic free-learning reply before calling AI, so deposit promotion cannot be generated for these messages.
+- General chat redacts the configured private session contact from saved knowledge and outgoing answers; only eligible session delivery reveals it. Public service browsing never grants access.
 - Load admin Q&A as data into the existing chat agent for ordinary paraphrases; direct matches remain deterministic and Trader-ID-only states bypass chat.
 - Q&A lookup failures fall back to configured service knowledge; generation failures show an explicit notice rather than silently resetting the chat to the menu.
 

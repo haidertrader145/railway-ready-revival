@@ -21,6 +21,12 @@ describe("custom Q&A", () => {
   it("ignores unrelated messages", () => {
     expect(matchFaq("weather today", faqs)).toBeNull();
   });
+  it("prioritizes the full saved question over a shorter related question", () => {
+    expect(matchFaq("How do I join VIP?", [
+      { question: "join VIP", answer: "Short general answer" },
+      { question: "How do I join VIP?", answer: "Exact configured joining answer" },
+    ])?.answer).toBe("Exact configured joining answer");
+  });
   it("adds Back, Menu and Meri Services buttons", () => {
     const cbs = faqKeyboard().inline_keyboard.flat().map((b) => b.callback_data);
     expect(cbs).toEqual(["nav:back", "nav:menu", "m:services"]);
