@@ -44,5 +44,6 @@ describe("private session contact in general chat", () => {
     const markup = lastBody()?.['reply_markup'] as { inline_keyboard: { callback_data?: string }[][] };
     expect(markup.inline_keyboard.flat().map((button) => button.callback_data)).toContain("m:browse");
     expect(String(lastBody()?.['text']).toLowerCase()).not.toContain("amirtrader540");
+    expect(mocks.agent).not.toHaveBeenCalled();
   });
 });

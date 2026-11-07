@@ -128,7 +128,14 @@ export async function sayPlain(chatId: number, text: string, keyboard?: B.Inline
  * agent is unavailable or fails, the user receives a clear notice. */
 export async function handleChatMessage(chatId: number, text: string, request: Request) {
   try {
-    if (!B.needsFreeLearningSupport(text)) {
+    if (B.needsFreeLearningSupport(text)) {
+      await setUser(chatId, { state: "chat" });
+      const keyboard = B.faqKeyboard();
+      keyboard.inline_keyboard.unshift([{ text: "Our Services", callback_data: "m:browse" }]);
+      await sayPlain(chatId, B.freeLearningSupportReply(await loadSettings()), keyboard);
+      return;
+    }
+    {
       const hit = B.matchFaq(text, await loadChatFaqs());
       if (hit) {
         await setUser(chatId, { state: "chat" });
@@ -141,9 +148,6 @@ export async function handleChatMessage(chatId: number, text: string, request: R
     if (reply) {
       await setUser(chatId, { state: "chat" });
       const keyboard = B.faqKeyboard();
-      if (B.needsFreeLearningSupport(text)) {
-        keyboard.inline_keyboard.unshift([{ text: "📋 Services Dekhein", callback_data: "m:browse" }]);
-      }
       await sayPlain(chatId, B.redactPrivateSessionContact(reply, await loadSettings()), keyboard);
       return;
     }
@@ -163,7 +167,7 @@ export async function showServices(chatId: number) {
 /** Public information only; browsing never grants service access or reveals booking details. */
 export async function showServiceOverview(chatId: number) {
   const services = await loadServices();
-  await sayPlain(chatId, ["Amir FX — Available Services", ...services.map((service) => `• ${service.title}`), "Kisi service ke baare mein sawal ho to poochein. Yeh maloomat hai, success ya loss recovery ka wada nahi."].join("\n"), B.faqKeyboard());
+  await sayPlain(chatId, ["Amir FX — Available Services", ...services.map((service) => `• ${service.title}`), "Kisi service ke baare mein sawal ho to poochein."].join("\n"), B.faqKeyboard());
 }
 
 export async function sendWelcome(chatId: number) {

@@ -332,10 +332,7 @@ export function needsFreeLearningSupport(text: string): boolean {
 }
 
 export function freeLearningSupportReply(settings: BotSettings): string {
-  return [
-    "Aap ki pareshani samajh sakte hain. Amir FX Community mein aap ko khush aamdeed — sawalon aur support ke liye hum yahan hain.",
-    "Aap chahein to ‘Services Dekhein’ se available services ki maloomat dekh sakte hain aur apne sawal pooch sakte hain.",
-  ].join("\n");
+  return "Aap sahi jagah par hain—hum aap ko guide karein ge; Our Services par click karein.";
 }
 
 /** General chat never discloses the private booking contact, even from saved data. */

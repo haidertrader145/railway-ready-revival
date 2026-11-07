@@ -14,7 +14,7 @@
 - Personal-session delivery sends instructions through the normal button-bearing reply, followed by an exact plain Telegram message without markup so users can forward it unchanged.
 - Admin license deletion removes selected records or all records with explicit bulk confirmation; it does not revoke externally delivered licenses or reset Trader ID verification.
 
-- Route financial-loss/distress chat to a deterministic free-learning reply before calling AI, so deposit promotion cannot be generated for these messages.
+- Route financial-loss/distress chat to the deterministic support reply before FAQ lookup or AI, with neutral service browsing that never grants access or promotes deposits.
 - General chat redacts the configured private session contact from saved knowledge and outgoing answers; only eligible session delivery reveals it. Public service browsing never grants access.
 - Load admin Q&A as data into the existing chat agent for ordinary paraphrases; direct matches remain deterministic and Trader-ID-only states bypass chat.
 - Q&A lookup failures fall back to configured service knowledge; generation failures show an explicit notice rather than silently resetting the chat to the menu.

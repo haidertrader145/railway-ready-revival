@@ -1,5 +1,6 @@
 # Roadmap
 
+- [x] Use the requested short loss/worry reply with Our Services browsing; remove the unsolicited disclaimer from the service overview while retaining truthful answers to explicit questions.
 - [x] Restrict private session contact in general chat to eligible bookings; add neutral service browsing to supportive loss/worry replies; exact saved questions now win over shorter matches. All 56 tests pass; 21 saved questions confirmed in admin. Loss-related Q&A remains subject to support safeguards; Telegram changes require publishing.
 
 - [x] Improve existing agent's data-grounded answers and clear failure messages; distress replies reassure without class/deposit/service promotion. Live service and registration-link questions answered successfully; 50 tests pass. Publishing required for Telegram.
