@@ -12,10 +12,11 @@
 ## Architecture rules
 
 - Personal-session delivery sends instructions through the normal button-bearing reply, followed by an exact plain Telegram message without markup so users can forward it unchanged.
-- Admin license deletion removes only the selected saved key record; it does not revoke externally delivered licenses or reset Trader ID verification.
+- Admin license deletion removes selected records or all records with explicit bulk confirmation; it does not revoke externally delivered licenses or reset Trader ID verification.
 
 - Route financial-loss/distress chat to a deterministic free-learning reply before calling AI, so deposit promotion cannot be generated for these messages.
 - Load admin Q&A as data into the existing chat agent for ordinary paraphrases; direct matches remain deterministic and Trader-ID-only states bypass chat.
+- Q&A lookup failures fall back to configured service knowledge; generation failures show an explicit notice rather than silently resetting the chat to the menu.
 
 - All Telegram Bot API calls go through the Lovable connector gateway (`telegram.server.ts`), so `LOVABLE_API_KEY` + `TELEGRAM_API_KEY` are required at runtime on any host — never swap to direct api.telegram.org calls with a raw bot token.
 - Bot data tables (bot_users, service_config, bot_settings, bot_messages, verification_requests, license_keys, verified_users, bridge_state) are service-role only: RLS enabled, no policies, no anon/authenticated grants.

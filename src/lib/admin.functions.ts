@@ -145,6 +145,16 @@ export const deleteLicenseKey = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const deleteAllLicenseKeys = createServerFn({ method: "POST" })
+  .inputValidator((input: { confirmation: string }) => z.object({ confirmation: z.literal("DELETE ALL KEYS") }).parse(input))
+  .handler(async () => {
+    await requireUnlocked();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("license_keys").delete().gt("id", 0);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 // The admin must enter the balance they confirmed — it is never guessed.
 export const resolveRequest = createServerFn({ method: "POST" })
   .inputValidator((input: { requestId: string; verified: boolean; balance?: number }) =>

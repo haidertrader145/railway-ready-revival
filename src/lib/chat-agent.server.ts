@@ -5,7 +5,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, type ModelMessage } from "ai";
 
 import { createLovableAiGatewayRunIdFetch, getLovableAiGatewayRunId } from "@/lib/ai-run-id.server";
-import { loadFaqs, loadServices, loadSettings } from "@/lib/bot.server";
+import { loadChatFaqs, loadServices, loadSettings } from "@/lib/bot.server";
 import * as B from "@/lib/bot";
 
 const CHAT_MODEL = "openai/gpt-6-astra";
@@ -18,9 +18,9 @@ export async function chatAgentReply(
     return B.freeLearningSupportReply(await loadSettings());
   }
   const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) return null;
+  if (!apiKey) throw new Error("AI configuration is missing.");
 
-  const [settings, services, faqs] = await Promise.all([loadSettings(), loadServices(), loadFaqs()]);
+  const [settings, services, faqs] = await Promise.all([loadSettings(), loadServices(), loadChatFaqs()]);
   const runIdFetch = createLovableAiGatewayRunIdFetch(getLovableAiGatewayRunId(request));
   const provider = createOpenAI({
     baseURL: "https://ai.gateway.lovable.dev/v1",
@@ -35,10 +35,11 @@ export async function chatAgentReply(
 
   const result = streamText({
     model: provider.responses(CHAT_MODEL),
-    system: B.chatAgentSystemPrompt(settings, services, faqs),
+    instructions: B.chatAgentSystemPrompt(settings, services, faqs),
     messages,
     abortSignal: request.signal,
     maxOutputTokens: 600,
+    maxRetries: 0,
     providerOptions: {
       openai: {
         store: false,
@@ -51,5 +52,6 @@ export async function chatAgentReply(
   });
 
   const text = (await result.text).trim();
-  return text || null;
+  if (!text) throw new Error("AI returned no answer.");
+  return text;
 }

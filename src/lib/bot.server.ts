@@ -32,6 +32,16 @@ export async function loadFaqs(): Promise<B.Faq[]> {
   return data ?? [];
 }
 
+/** Q&A outages must not prevent answers from configured service knowledge. */
+export async function loadChatFaqs(): Promise<B.Faq[]> {
+  try {
+    return await loadFaqs();
+  } catch (error) {
+    console.error("Chat Q&A unavailable:", error);
+    return [];
+  }
+}
+
 /** Sends a message. Every message gets the clickable "Register Now" button.
  * Messages are kept forever — nothing is ever auto-deleted. */
 export async function say(chatId: number, text: string, keyboard?: B.InlineKeyboard) {
@@ -115,11 +125,11 @@ export async function sayPlain(chatId: number, text: string, keyboard?: B.Inline
 
 /** Free-text outside the trader-ID / balance states goes to the chat agent,
  * which answers only about account creation, deposit and services. If the
- * agent is unavailable or fails, the user falls back to the main menu. */
+ * agent is unavailable or fails, the user receives a clear notice. */
 export async function handleChatMessage(chatId: number, text: string, request: Request) {
   try {
     if (!B.needsFreeLearningSupport(text)) {
-      const hit = B.matchFaq(text, await loadFaqs());
+      const hit = B.matchFaq(text, await loadChatFaqs());
       if (hit) {
         await setUser(chatId, { state: "chat" });
         await sayPlain(chatId, hit.answer, B.faqKeyboard());
@@ -135,8 +145,10 @@ export async function handleChatMessage(chatId: number, text: string, request: R
     }
   } catch (err) {
     console.error("chat agent failed:", err);
+    await sayPlain(chatId, "Abhi AI jawab nahi de saka. Aap ka sawal receive hua hai; team se rabta karein ya baad mein dobara bhejein.", B.faqKeyboard());
+    return;
   }
-  await showMainMenu(chatId);
+  await sayPlain(chatId, "Abhi AI jawab available nahi hai. Menu se service choose karein ya team se rabta karein.", B.faqKeyboard());
 }
 
 export async function showServices(chatId: number) {

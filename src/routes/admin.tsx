@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { BotSettingsPanel } from "@/components/BotSettingsPanel";
 import { FaqPanel } from "@/components/FaqPanel";
 import { BridgePanel } from "@/components/BridgePanel";
-import { addLicenseKeys, deleteLicenseKey, getAdminOverview, resolveRequest, unverifyUser } from "@/lib/admin.functions";
+import { addLicenseKeys, deleteAllLicenseKeys, deleteLicenseKey, getAdminOverview, resolveRequest, unverifyUser } from "@/lib/admin.functions";
 
 type Overview = Awaited<ReturnType<typeof getAdminOverview>>;
 
@@ -46,6 +46,7 @@ function AdminPage() {
   const fetchOverview = useServerFn(getAdminOverview);
   const postKeys = useServerFn(addLicenseKeys);
   const postDeleteKey = useServerFn(deleteLicenseKey);
+  const postDeleteAll = useServerFn(deleteAllLicenseKeys);
   const postResolve = useServerFn(resolveRequest);
   const postUnverify = useServerFn(unverifyUser);
 
@@ -54,6 +55,7 @@ function AdminPage() {
   const [newKeys, setNewKeys] = useState("");
   const [saving, setSaving] = useState(false);
   const [deletingKey, setDeletingKey] = useState<number | null>(null);
+  const [deletingAll, setDeletingAll] = useState(false);
   const [tab, setTab] = useState<"requests" | "keys" | "users" | "settings" | "q&a">("requests");
 
   const load = useCallback(async () => {
@@ -112,6 +114,20 @@ function AdminPage() {
       alert(err instanceof Error ? err.message : "Failed to delete key");
     } finally {
       setDeletingKey(null);
+    }
+  }
+
+  async function handleDeleteAllKeys() {
+    const confirmation = window.prompt("Permanently delete ALL saved keys, including issued keys and keys not shown in this list? This cannot be undone. It does not revoke delivered licenses or reset verification. Type DELETE ALL KEYS to confirm.");
+    if (confirmation !== "DELETE ALL KEYS") return;
+    setDeletingAll(true);
+    try {
+      await postDeleteAll({ data: { confirmation } });
+      await load();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to delete keys");
+    } finally {
+      setDeletingAll(false);
     }
   }
 
@@ -244,7 +260,7 @@ function AdminPage() {
               />
               <button
                 type="submit"
-                disabled={saving || !newKeys.trim()}
+                disabled={saving || deletingAll || !newKeys.trim()}
                 className="mt-3 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
               >
                 {saving ? "Adding…" : "Add keys"}
@@ -252,7 +268,12 @@ function AdminPage() {
             </form>
 
             <div className="rounded-xl border border-border bg-card p-4">
-              <h2 className="text-base font-semibold text-foreground">All keys</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-base font-semibold text-foreground">All keys</h2>
+                <Button variant="destructive" size="sm" disabled={deletingAll || deletingKey !== null || saving || !data.keys.length} onClick={handleDeleteAllKeys}>
+                  <Trash2 />{deletingAll ? "Deleting…" : "Delete all keys"}
+                </Button>
+              </div>
               <div className="mt-4 overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -277,7 +298,7 @@ function AdminPage() {
                             size="icon"
                             title="Delete license key"
                             aria-label={`Delete license key ${k.id}`}
-                            disabled={deletingKey !== null}
+                            disabled={deletingKey !== null || deletingAll}
                             onClick={() => handleDeleteKey(k.id, k.status)}
                           >
                             <Trash2 />
