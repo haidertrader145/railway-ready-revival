@@ -190,7 +190,7 @@ export function verifiedText(traderId: string, balance: number): string {
     `Aap ka Quotex Trading Account successfully Amir FX Community ke saath verify ho chuka hai.\n\n` +
     `🆔 Trader ID: <b>${traderId}</b>\n💰 Available Balance: <b>${money(balance)}</b>\n\n` +
     `<b>Available Services:</b>\n\n` +
-    `🚀 1. Quotex Trading Series\nStarting balance: $100 | Target: $500 | Duration: 2 Days\n\n` +
+    `🚀 1. Quotex Trading Series\nStarting balance: $100 | Target: $5000 | Duration: 2 Days\n\n` +
     `👑 2. Quotex VIP Trading Sessions\nMinimum account balance: $50\n\n` +
     `🤖 3. Quotex AI Bot License Key\nMinimum account balance: $50\n\n` +
     `💎 4. One-to-One Trading Session\nMinimum account balance: $300 | 50/50 profit sharing\n\n` +
@@ -208,8 +208,8 @@ export function serviceIntroText(service: ServiceInfo): string {
   switch (service.service_key) {
     case "trading_series":
       return (
-        `🚀 <b>AMIR FX QUOTEX TRADING SERIES</b>\n\n💰 <b>$100 TO $500 TRADING SERIES</b>\n\n` +
-        `Starting Balance: $100\nTarget Balance: $500\nDuration: 2 Days\nPlatform: Quotex\n\n` +
+        `🚀 <b>AMIR FX QUOTEX TRADING SERIES</b>\n\n💰 <b>$100 TO $5000 TRADING SERIES</b>\n\n` +
+        `Starting Balance: $100\nTarget Balance: $5000\nDuration: 2 Days\nPlatform: Quotex\n\n` +
         `Join karne ke liye minimum ${min} account balance zaroori hai.\n\n` +
         `Apni Trader ID send karein taake account aur balance verify kiya ja sake.`
       );
