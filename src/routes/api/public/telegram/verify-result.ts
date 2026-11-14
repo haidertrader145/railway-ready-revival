@@ -23,7 +23,7 @@ export const Route = createFileRoute("/api/public/telegram/verify-result")({
         if (!parsed.success) return Response.json({ error: "Invalid body" }, { status: 400 });
         const { request_id, affiliate_reply } = parsed.data;
 
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { supabaseAdmin } = await import("@/lib/bot-database.server");
         const { data: req } = await supabaseAdmin
           .from("verification_requests")
           .select("trader_id")

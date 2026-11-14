@@ -15,7 +15,7 @@ export const Route = createFileRoute("/api/public/telegram/pending-requests")({
           return new Response("Unauthorized", { status: 401 });
         }
 
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { supabaseAdmin } = await import("@/lib/bot-database.server");
         // Expire stale checks first so the bridge never re-checks an old ID forever.
         const E = await import("@/lib/bot.server");
         await E.expireStalePending().catch(() => {});

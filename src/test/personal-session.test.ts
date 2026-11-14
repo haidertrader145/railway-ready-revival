@@ -3,7 +3,7 @@ import { DEFAULT_SETTINGS } from "@/lib/bot";
 
 const mocks = vi.hoisted(() => ({ telegram: vi.fn(async (_method: string, _body: Record<string, unknown>) => ({ message_id: 1 })) }));
 vi.mock("@/lib/telegram.server", () => ({ telegramCall: mocks.telegram }));
-vi.mock("@/integrations/supabase/client.server", () => ({ supabaseAdmin: { from: (table: string) => {
+vi.mock("@/lib/bot-database.server", () => ({ supabaseAdmin: { from: (table: string) => {
   const query = {
     select: () => query, eq: () => query, order: () => query, update: () => query, upsert: () => query,
     maybeSingle: async () => ({ data: table === "verification_requests" ? { id: "req", status: "pending", chat_id: 101, trader_id: "12345678", platform: "quotex", purpose: "balance_check", service_key: "one_to_one" } : null }),

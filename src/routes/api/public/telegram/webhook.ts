@@ -96,7 +96,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           const platform = (awaitingId ? state.split(":")[1] : user?.platform) ?? "quotex";
           const serviceKey = awaitingBal ? (state.split(":")[1] ?? null) : null;
 
-          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { supabaseAdmin } = await import("@/lib/bot-database.server");
           // Expire stale pending checks first so a stuck one never blocks a retry.
           await E.expireStalePending().catch(() => {});
           const { data: pending } = await supabaseAdmin

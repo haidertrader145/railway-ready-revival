@@ -15,7 +15,7 @@ export const Route = createFileRoute("/api/public/telegram/bridge")({
     handlers: {
       GET: async ({ request }) => {
         if (!authorized(request)) return new Response("Unauthorized", { status: 401 });
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { supabaseAdmin } = await import("@/lib/bot-database.server");
         const { data } = await supabaseAdmin.from("bridge_state").select("*").eq("id", 1).maybeSingle();
         return Response.json({
           api_id: process.env["TG_API_ID"] ?? null,
@@ -41,7 +41,7 @@ export const Route = createFileRoute("/api/public/telegram/bridge")({
         if (typeof body.status === "string") update["status"] = body.status.slice(0, 50);
         if (body.session_string !== undefined) update["session_string"] = body.session_string;
         if (body.clear_code) update["login_code"] = null;
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { supabaseAdmin } = await import("@/lib/bot-database.server");
         await supabaseAdmin.from("bridge_state").update(update as never).eq("id", 1);
         return Response.json({ ok: true });
       },

@@ -5,7 +5,7 @@ import * as B from "@/lib/bot";
 import { telegramCall } from "@/lib/telegram.server";
 
 async function db() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { supabaseAdmin } = await import("@/lib/bot-database.server");
   return supabaseAdmin;
 }
 

@@ -46,7 +46,7 @@ export const lockAdmin = createServerFn({ method: "POST" }).handler(async () => 
 export const getAdminOverview = createServerFn({ method: "GET" })
   .handler(async () => {
     await requireUnlocked();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/lib/bot-database.server");
 
     const [keys, users, requests] = await Promise.all([
       supabaseAdmin
@@ -82,7 +82,7 @@ export const getAdminOverview = createServerFn({ method: "GET" })
 export const getBridgeStatus = createServerFn({ method: "GET" })
   .handler(async () => {
     await requireUnlocked();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/lib/bot-database.server");
     const { data } = await supabaseAdmin
       .from("bridge_state" as never)
       .select("status, last_seen")
@@ -95,7 +95,7 @@ export const submitLoginCode = createServerFn({ method: "POST" })
   .inputValidator((input: { code: string }) => z.object({ code: z.string().regex(/^\d{4,8}$/) }).parse(input))
   .handler(async ({ data }) => {
     await requireUnlocked();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/lib/bot-database.server");
     await supabaseAdmin.from("bridge_state" as never).update({ login_code: data.code } as never).eq("id", 1);
     return { ok: true };
   });
@@ -103,7 +103,7 @@ export const submitLoginCode = createServerFn({ method: "POST" })
 export const resetBridgeLogin = createServerFn({ method: "POST" })
   .handler(async () => {
     await requireUnlocked();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/lib/bot-database.server");
     await supabaseAdmin
       .from("bridge_state" as never)
       .update({ session_string: null, login_code: null, status: "restart_needed" } as never)
@@ -115,7 +115,7 @@ export const addLicenseKeys = createServerFn({ method: "POST" })
   .inputValidator((input: { keys: string }) => z.object({ keys: z.string().min(1).max(20000) }).parse(input))
   .handler(async ({ data }) => {
     await requireUnlocked();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/lib/bot-database.server");
 
     const keys = [...new Set(data.keys.split(/\r?\n/).map((k) => k.trim()).filter(Boolean))];
     if (keys.length === 0) throw new Error("No keys provided");
@@ -133,7 +133,7 @@ export const deleteLicenseKey = createServerFn({ method: "POST" })
   .inputValidator((input: { id: number }) => z.object({ id: z.number().int().positive().safe() }).parse(input))
   .handler(async ({ data }) => {
     await requireUnlocked();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/lib/bot-database.server");
     const { data: deleted, error } = await supabaseAdmin
       .from("license_keys")
       .delete()
@@ -149,7 +149,7 @@ export const deleteAllLicenseKeys = createServerFn({ method: "POST" })
   .inputValidator((input: { confirmation: string }) => z.object({ confirmation: z.literal("DELETE ALL KEYS") }).parse(input))
   .handler(async () => {
     await requireUnlocked();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/lib/bot-database.server");
     const { error } = await supabaseAdmin.from("license_keys").delete().gt("id", 0);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -173,7 +173,7 @@ export const resolveRequest = createServerFn({ method: "POST" })
 
 export const getBotConfig = createServerFn({ method: "GET" }).handler(async () => {
   await requireUnlocked();
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { supabaseAdmin } = await import("@/lib/bot-database.server");
   const [s, svc, users] = await Promise.all([
     supabaseAdmin.from("bot_settings").select("key, value"),
     supabaseAdmin.from("service_config").select("*").order("sort"),
@@ -205,7 +205,7 @@ export const saveBotConfig = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     await requireUnlocked();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/lib/bot-database.server");
     if (data.settings.length) {
       const { error } = await supabaseAdmin.from("bot_settings").upsert(data.settings, { onConflict: "key" });
       if (error) throw new Error(error.message);
@@ -227,7 +227,7 @@ export const unverifyUser = createServerFn({ method: "POST" })
   .inputValidator((input: { chatId: number }) => z.object({ chatId: z.number().int().positive() }).parse(input))
   .handler(async ({ data }) => {
     await requireUnlocked();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/lib/bot-database.server");
     await supabaseAdmin.from("verified_users").delete().eq("chat_id", data.chatId);
     const { error } = await supabaseAdmin
       .from("bot_users")
@@ -239,7 +239,7 @@ export const unverifyUser = createServerFn({ method: "POST" })
 
 export const listFaqs = createServerFn({ method: "GET" }).handler(async () => {
   await requireUnlocked();
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { supabaseAdmin } = await import("@/lib/bot-database.server");
   const { data } = await supabaseAdmin.from("bot_faqs").select("id, question, answer").order("created_at", { ascending: false });
   return data ?? [];
 });
@@ -251,7 +251,7 @@ export const addFaqsBulk = createServerFn({ method: "POST" })
     const { parseBulkFaqs } = await import("@/lib/bot");
     const rows = parseBulkFaqs(data.text);
     if (!rows.length) throw new Error('No questions found. Use "Q:" and "A:" lines.');
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/lib/bot-database.server");
     const { error } = await supabaseAdmin.from("bot_faqs").insert(rows);
     if (error) throw new Error(error.message);
     return { added: rows.length };
@@ -263,7 +263,7 @@ export const updateFaq = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     await requireUnlocked();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/lib/bot-database.server");
     const { error } = await supabaseAdmin.from("bot_faqs").update({ question: data.question, answer: data.answer }).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -273,7 +273,7 @@ export const deleteFaq = createServerFn({ method: "POST" })
   .inputValidator((input: { id: string }) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => {
     await requireUnlocked();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/lib/bot-database.server");
     await supabaseAdmin.from("bot_faqs").delete().eq("id", data.id);
     return { ok: true };
   });

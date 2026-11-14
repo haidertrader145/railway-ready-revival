@@ -26,7 +26,7 @@ vi.mock("@/lib/bot.server", () => ({
   sayTraderIdOwned: mocks.sayTraderIdOwned,
   showServices: mocks.showServices,
 }));
-vi.mock("@/integrations/supabase/client.server", () => ({
+vi.mock("@/lib/bot-database.server", () => ({
   supabaseAdmin: { from: () => {
     const query = { select: () => query, eq: () => query, maybeSingle: async () => ({ data: null }), insert: mocks.inserts };
     return query;

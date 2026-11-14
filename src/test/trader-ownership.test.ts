@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/telegram.server", () => ({ telegramCall: mocks.telegram }));
-vi.mock("@/integrations/supabase/client.server", () => ({
+vi.mock("@/lib/bot-database.server", () => ({
   supabaseAdmin: {
     from: (table: string) => {
       const query = {

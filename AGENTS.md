@@ -11,6 +11,8 @@
 
 ## Architecture rules
 
+- All bot/admin/bridge data access uses the dedicated server-only external database client and EXTERNAL_DB_SERVER_KEY; never silently fall back to the managed database, because split writes lose ownership and verification consistency. Generated Cloud clients remain unchanged.
+
 - Personal-session delivery sends instructions through the normal button-bearing reply, followed by an exact plain Telegram message without markup so users can forward it unchanged.
 - Admin license deletion removes selected records or all records with explicit bulk confirmation; it does not revoke externally delivered licenses or reset Trader ID verification.
 

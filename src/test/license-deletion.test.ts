@@ -6,7 +6,7 @@ vi.mock("@tanstack/react-start", () => ({ createServerFn: () => ({
   handler: (run: () => unknown) => run,
 }) }));
 vi.mock("@tanstack/react-start/server", () => ({ useSession: vi.fn() }));
-vi.mock("@/integrations/supabase/client.server", () => ({ supabaseAdmin: { from: mocks.from } }));
+vi.mock("@/lib/bot-database.server", () => ({ supabaseAdmin: { from: mocks.from } }));
 import { deleteAllLicenseKeys, deleteLicenseKey } from "@/lib/admin.functions";
 
 describe("selected license deletion", () => {

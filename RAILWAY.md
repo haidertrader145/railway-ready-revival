@@ -21,6 +21,8 @@ the full list with explanations):
 
 | Variable | Where the value comes from |
 | --- | --- |
+| `EXTERNAL_DB_URL` | Your external database base URL, without `/rest/v1/` |
+| `EXTERNAL_DB_SERVER_KEY` | Your external database secret/server key; never a publishable key |
 | `SUPABASE_URL` | Your database project's URL |
 | `SUPABASE_SERVICE_ROLE_KEY` | Your database project's server key |
 | `SUPABASE_PUBLISHABLE_KEY` | Your database project's public key |
@@ -34,12 +36,13 @@ the full list with explanations):
 | `ADMIN_PASSWORD` | Your admin panel password |
 | `SESSION_SECRET` | Any long random string |
 
-> **Note on the database:** the built-in Lovable backend does not expose its
-> server key, so a Railway copy cannot read it. For the Railway deployment,
-> point `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` /
-> `SUPABASE_PUBLISHABLE_KEY` at a database project you own (for example your
-> earlier Supabase project) and run this project's migration SQL there. The
-> app itself stays editable in Lovable.
+> **Bot database:** bot, admin, and verifier endpoints now use `EXTERNAL_DB_URL`
+> and `EXTERNAL_DB_SERVER_KEY`, not the generated managed integration. Existing
+> records have been copied to the external database. Do not rerun the initial
+> setup against this populated database. Keep its server key private.
+> The app stays editable in Lovable. Railway and the external database have
+> their own availability/billing policies; Telegram and AI still use Lovable's
+> gateway and credits. Moving data does not guarantee uninterrupted service.
 
 ## 4. Point Telegram at the Railway URL
 

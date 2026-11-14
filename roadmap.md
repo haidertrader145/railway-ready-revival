@@ -1,6 +1,7 @@
 # Roadmap
 
-- [ ] Transfer bot tables and existing data to the owner's external database, then switch all bot/admin reads and writes — blocked because the external database has no bot tables and the saved API key cannot create SQL schema; owner must apply the supplied schema in their external database SQL editor first. Keep the current database unchanged until transfer and read-back verification succeed.
+- [x] Copy all ten bot tables to the owner's external database and route bot/admin/bridge data through its private server client; all copied rows verified, 58 tests pass, and admin save/reload/delete verified against the external database. Original database retained unchanged.
+- [ ] Activate the external database in the published bot — waits on publishing approval; reconcile any source records changed since the transfer before cutover, then verify a real Telegram/Railway check. Railway app deployments also need EXTERNAL_DB_SERVER_KEY (and optionally EXTERNAL_DB_URL); Telegram and AI still depend on gateway credits.
 
 - [x] Update and package the Railway verification helper with reusable TG_SESSION login, safe reconnects, and a private local session generator; 8 helper tests and 7 Trader ID regression tests pass.
 - [ ] Confirm real verification on Railway with the updated helper — blocked on the owner's valid TG_SESSION and Railway deployment; credentials are not included in the download.
