@@ -2,9 +2,14 @@
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/telegram";
 
+// Prefer the newest linked bot connection (_1) so a replacement bot takes over without code changes.
+export function getTelegramKey(): string | undefined {
+  return process.env["TELEGRAM_API_KEY_1"] || process.env["TELEGRAM_API_KEY"];
+}
+
 function getKeys() {
   const lovableKey = process.env["LOVABLE_API_KEY"];
-  const telegramKey = process.env["TELEGRAM_API_KEY"];
+  const telegramKey = getTelegramKey();
   if (!lovableKey) throw new Error("LOVABLE_API_KEY is not configured");
   if (!telegramKey) throw new Error("TELEGRAM_API_KEY is not configured");
   return { lovableKey, telegramKey };

@@ -6,7 +6,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import * as B from "@/lib/bot";
-import { deriveTelegramWebhookSecret, safeEqual, telegramCall } from "@/lib/telegram.server";
+import { deriveTelegramWebhookSecret, getTelegramKey, safeEqual, telegramCall } from "@/lib/telegram.server";
 
 type TelegramUpdate = {
   update_id?: number;
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const telegramKey = process.env["TELEGRAM_API_KEY"];
+        const telegramKey = getTelegramKey();
         const verifier = process.env["VERIFIER_SECRET"];
         if (!telegramKey && !verifier) return new Response("Not configured", { status: 500 });
 

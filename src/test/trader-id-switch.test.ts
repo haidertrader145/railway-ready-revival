@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("@tanstack/react-router", () => ({ createFileRoute: () => (options: unknown) => options }));
 vi.mock("@/lib/telegram.server", () => ({
+  getTelegramKey: () => process.env["TELEGRAM_API_KEY_1"] || process.env["TELEGRAM_API_KEY"],
   deriveTelegramWebhookSecret: async () => "test-secret",
   safeEqual: (a: string, b: string) => a === b,
   telegramCall: async () => ({}),
