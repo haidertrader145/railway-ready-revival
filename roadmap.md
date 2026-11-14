@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Update and package the Railway verification helper with reusable TG_SESSION login, safe reconnects, and a private local session generator; 8 helper tests and 7 Trader ID regression tests pass.
+- [ ] Confirm real verification on Railway with the updated helper — blocked on the owner's valid TG_SESSION and Railway deployment; credentials are not included in the download.
+
 - [x] Use the requested short loss/worry reply with Our Services browsing; remove the unsolicited disclaimer from the service overview while retaining truthful answers to explicit questions.
 - [x] Restrict private session contact in general chat to eligible bookings; add neutral service browsing to supportive loss/worry replies; exact saved questions now win over shorter matches. All 56 tests pass; 21 saved questions confirmed in admin. Loss-related Q&A remains subject to support safeguards; Telegram changes require publishing.
 

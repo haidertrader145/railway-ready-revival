@@ -1,0 +1,7 @@
+.git
+.env*
+*.secret
+*.session*
+__pycache__
+.venv
+tests
