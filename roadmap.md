@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Transfer bot tables and existing data to the owner's external database, then switch all bot/admin reads and writes — blocked because the external database has no bot tables and the saved API key cannot create SQL schema; owner must apply the supplied schema in their external database SQL editor first. Keep the current database unchanged until transfer and read-back verification succeed.
+
 - [x] Update and package the Railway verification helper with reusable TG_SESSION login, safe reconnects, and a private local session generator; 8 helper tests and 7 Trader ID regression tests pass.
 - [ ] Confirm real verification on Railway with the updated helper — blocked on the owner's valid TG_SESSION and Railway deployment; credentials are not included in the download.
 
