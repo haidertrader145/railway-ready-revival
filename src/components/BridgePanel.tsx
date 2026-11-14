@@ -7,7 +7,7 @@ const LABELS: Record<string, string> = {
   offline: "Not running yet",
   waiting_code: "Waiting for your Telegram login code",
   running: "Running — verifying automatically",
-  login_failed: "Login failed — check your code and try again",
+  login_failed: "Helper could not connect to Telegram",
   restart_needed: "Restart the helper on Railway to log in again",
   config_missing: "Missing Telegram details",
 };
@@ -42,15 +42,15 @@ export function BridgePanel() {
       <p className="mt-1 text-sm text-muted-foreground">Status: <b className="text-foreground">{LABELS[status] ?? status}</b></p>
       {status === "offline" && (
         <p className="mt-2 text-xs text-muted-foreground">
-          Start the helper on Railway (deploy the zip with VERIFIER_SECRET set). A few seconds
-          after it starts, Telegram sends a login code to your account and the code box appears
-          here automatically — no button needed.
+          Start the helper on Railway with VERIFIER_SECRET and TG_SESSION set. This page shows
+          Running a few seconds after it connects.
         </p>
       )}
       {status === "login_failed" && (
         <p className="mt-2 text-xs text-muted-foreground">
-          The code was not accepted. The helper sends a fresh code to your Telegram every
-          minute — type the newest one below when the box appears.
+          The saved Telegram session was rejected (for example, it was used on two servers at
+          once). Create a fresh session, put it in Railway's TG_SESSION variable, and run only one
+          helper. This page updates by itself once the helper connects.
         </p>
       )}
       {status === "waiting_code" && (
